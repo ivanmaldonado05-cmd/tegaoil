@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gran Sorteo Tega Oil × Vevil</title>
+  <meta name="description" content="Participá del gran sorteo de Tega Oil y Vevil. Conocé los premios, cómo participar y las bases y condiciones.">
+  <meta name="theme-color" content="#0B0A0D">
+  <meta property="og:title" content="Gran Sorteo Tega Oil × Vevil">
+  <meta property="og:description" content="Cargá, participá y ganá.">
+  <meta property="og:image" content="assets/img/estacion.jpg">
+  <link rel="icon" href="assets/img/tega-iso.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+  <header class="nav" id="nav">
+    <div class="container nav__inner">
+      <a href="#inicio" class="nav__brand" aria-label="Inicio">
+        <img src="assets/img/tega-logo.svg" alt="Tega Oil" class="nav__tega">
+        <span class="nav__x">×</span>
+        <img src="assets/img/vevil-logo-white.png" alt="Vevil" class="nav__vevil">
+      </a>
+      <button class="nav__toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false"><span></span><span></span></button>
+      <nav class="nav__links" id="navLinks">
+        <a href="#ganadores" class="only-winners">Ganadores</a>
+        <a href="#premios">Premios</a>
+        <a href="#participar" class="only-pre">Cómo participar</a>
+        <a href="#fechas">Fechas</a>
+        <a href="#bases">Bases y condiciones</a>
+        <a href="#faq">Preguntas</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero" id="inicio">
+      <div class="hero__bg" aria-hidden="true"></div>
+      <div class="container hero__content">
+        <p class="eyebrow"><span class="dot"></span><span id="heroEyebrow">Sorteo oficial</span></p>
+        <h1 class="hero__title" id="heroTitle"></h1>
+        <p class="hero__lead" id="heroLead"></p>
+
+        <div class="countdown only-pre" id="countdown" aria-live="polite">
+          <div class="cd"><span class="cd__n" data-u="d">00</span><span class="cd__l">Días</span></div>
+          <div class="cd"><span class="cd__n" data-u="h">00</span><span class="cd__l">Horas</span></div>
+          <div class="cd"><span class="cd__n" data-u="m">00</span><span class="cd__l">Min</span></div>
+          <div class="cd"><span class="cd__n" data-u="s">00</span><span class="cd__l">Seg</span></div>
+        </div>
+        <p class="hero__date only-pre" id="heroDate"></p>
+
+        <div class="hero__ctas">
+          <a href="#participar" class="btn btn--primary only-pre">Cómo participar</a>
+          <a href="#ganadores" class="btn btn--primary only-winners">Ver ganadores</a>
+          <a href="#bases" class="btn btn--ghost">Bases y condiciones</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- GANADORES (solo después del sorteo) -->
+    <section class="section only-winners" id="ganadores">
+      <div class="container">
+        <div class="section__head">
+          <p class="kicker">Resultados</p>
+          <h2>¡Felicitaciones a los ganadores!</h2>
+          <p class="section__sub" id="winnersSub"></p>
+        </div>
+        <div class="winners" id="winnersGrid"></div>
+        <div class="video" id="videoWrap" hidden></div>
+        <p class="note center">Los ganadores tienen <strong>60 días</strong> para retirar su premio (Art. 19, Ley N° 1016/97).</p>
+      </div>
+    </section>
+
+    <!-- PREMIOS -->
+    <section class="section" id="premios">
+      <div class="container">
+        <div class="section__head">
+          <p class="kicker">Premios</p>
+          <h2>Esto es lo que podés ganar</h2>
+        </div>
+        <div class="prizes" id="prizesGrid"></div>
+      </div>
+    </section>
+
+    <!-- CÓMO PARTICIPAR -->
+    <section class="section section--alt only-pre" id="participar">
+      <div class="container">
+        <div class="section__head">
+          <p class="kicker">Cómo participar</p>
+          <h2>Participar es así de simple</h2>
+        </div>
+        <ol class="steps">
+          <li class="step">
+            <span class="step__n">01</span>
+            <h3>Cargá o comprá</h3>
+            <p id="stepReq"></p>
+          </li>
+          <li class="step">
+            <span class="step__n">02</span>
+            <h3>Recibí tu cupón</h3>
+            <p>Pedí tu cupón en caja al momento de pagar, en cualquier estación Tega Oil participante.</p>
+          </li>
+          <li class="step">
+            <span class="step__n">03</span>
+            <h3>Completá tus datos</h3>
+            <p>Escribí nombre, cédula y teléfono de forma clara y depositá el cupón en la urna.</p>
+          </li>
+          <li class="step">
+            <span class="step__n">04</span>
+            <h3>¡Esperá el sorteo!</h3>
+            <p>Mientras más cupones, más chances. Seguinos en redes para ver el sorteo en vivo.</p>
+          </li>
+        </ol>
+        <p class="note center">Participan solo mayores de 18 años con cédula de identidad paraguaya o documento válido.</p>
+      </div>
+    </section>
+
+    <!-- FECHAS -->
+    <section class="section" id="fechas">
+      <div class="container">
+        <div class="section__head">
+          <p class="kicker">Fechas clave</p>
+          <h2>Agendalo</h2>
+        </div>
+        <div class="timeline" id="timeline"></div>
+      </div>
+    </section>
+
+    <!-- BASES Y CONDICIONES -->
+    <section class="section section--alt" id="bases">
+      <div class="container container--narrow">
+        <div class="section__head">
+          <p class="kicker">Legal</p>
+          <h2>Bases y condiciones</h2>
+          <p class="section__sub">Promoción autorizada por la DNIT — <span id="dnitNum"></span></p>
+        </div>
+        <div class="accordion" id="basesList"></div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section" id="faq">
+      <div class="container container--narrow">
+        <div class="section__head">
+          <p class="kicker">Preguntas frecuentes</p>
+          <h2>¿Tenés dudas?</h2>
+        </div>
+        <div class="accordion" id="faqList"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__brands">
+        <img src="assets/img/tega-logo-white.svg" alt="Tega Oil" class="footer__tega">
+        <img src="assets/img/vevil-logo-white.png" alt="Vevil" class="footer__vevil">
+      </div>
+      <div class="footer__social" id="social"></div>
+      <p class="footer__legal">Prohibida la participación de menores de 18 años. Promoción sujeta a las bases y condiciones autorizadas por la DNIT.</p>
+      <p class="footer__copy">© <span id="year"></span> Tega Oil. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <a class="wa-float" id="waFloat" href="#" target="_blank" rel="noopener" aria-label="Escribinos por WhatsApp" hidden>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2Zm5.8 14.04c-.24.69-1.42 1.32-1.96 1.37-.5.05-1.13.07-1.83-.12-.42-.13-.96-.31-1.65-.61-2.9-1.25-4.79-4.17-4.94-4.36-.14-.19-1.18-1.57-1.18-3s.75-2.13 1.02-2.42c.27-.29.58-.36.78-.36h.56c.18 0 .42-.07.66.5.24.58.82 2.01.89 2.15.07.15.12.32.02.51-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.15-.3.31-.13.6.17.29.75 1.24 1.61 2.01 1.11.99 2.04 1.3 2.33 1.44.29.15.46.12.63-.07.17-.19.73-.85.92-1.15.19-.29.39-.24.66-.15.27.1 1.7.8 1.99.95.29.15.49.22.56.34.07.12.07.69-.17 1.38Z"/></svg>
+  </a>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
