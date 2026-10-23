@@ -398,3 +398,42 @@ body.is-winners .only-pre { display: none !important; }
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; }
 }
+
+/* ---------- Premios: destacado + 4 motos ---------- */
+.prizes { grid-template-columns: repeat(4, 1fr); }
+.prize--main { grid-column: 1 / -1; display: grid; grid-template-columns: 1.3fr 1fr; align-items: center; }
+.prize--main .prize__media { aspect-ratio: 16 / 9; height: 100%; }
+.prize--main .prize__body { padding: 36px 40px; }
+.prize--main h3 { font-size: clamp(1.8rem, 3.4vw, 2.6rem); }
+.prize--main .prize__ph { width: 22%; }
+
+/* ---------- Sucursales ---------- */
+.branches { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.branch {
+  display: flex; align-items: center; gap: 18px;
+  padding: 20px 22px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: border-color .25s, transform .25s;
+}
+.branch:hover { border-color: rgba(30, 251, 171, .5); transform: translateY(-3px); }
+.branch__n {
+  flex: 0 0 auto; font-size: 1.6rem; font-weight: 900; line-height: 1;
+  background: var(--grad-violet); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.branch__body { display: grid; gap: 2px; flex: 1; min-width: 0; }
+.branch__body strong { font-size: 1.05rem; }
+.branch__body span { color: var(--muted); font-size: .93rem; }
+.branch__go { color: var(--green-2); font-size: 1.2rem; }
+
+@media (max-width: 960px) {
+  .prizes { grid-template-columns: repeat(2, 1fr); }
+  .prize--main { grid-template-columns: 1fr; }
+  .prize--main .prize__body { padding: 22px 24px 26px; }
+}
+@media (max-width: 560px) {
+  .prizes { grid-template-columns: 1fr; }
+  .branches { grid-template-columns: 1fr; }
+}

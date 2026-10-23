@@ -2,43 +2,56 @@
    CONFIGURACIÓN DEL SORTEO — editar solo este archivo
    Campos vacíos ("") se muestran en el sitio como [PENDIENTE].
    Horario de Paraguay: UTC-03:00
+   Fuente: Anexo I CONAJZAR firmado (Res. CONAJZAR N° 21/2011)
    ========================================================== */
 window.SORTEO = {
-  nombre: "Gran Sorteo Tega Oil × Vevil",          // [PENDIENTE] nombre oficial de la promo
-  eslogan: "Cargá, participá y ganá",               // [PENDIENTE] eslogan oficial
+  nombre: "Vevil Premia tu Preferencia",
+  eslogan: "Comprá desde Gs. 100.000 en estaciones Tega Oil y participá por 4 motos y un cuadriciclo.",
+  alcance: "Nacional",
 
-  // Fechas (formato AAAA-MM-DDTHH:MM:00-03:00)
-  inicio: "",            // inicio de la promoción
-  cierre: "",            // cierre de participación
-  fechaSorteo: "",       // fecha y hora del sorteo → alimenta la cuenta regresiva
-  lugarSorteo: "",       // lugar del sorteo (exigido por DNIT)
-  modalidad: "",         // ej.: "boletas físicas en urna, ante escribano público"
+  // Fechas (AAAA-MM-DD)
+  inicio: "2026-11-10",
+  cierre: "2027-03-31",
+  fechaSorteo: "2027-03-31",
+  horaSorteo: "",            // ej.: "19:00" — si está vacío, la cuenta regresiva apunta al inicio del día
+  listaGanadores: "2027-04-02",
+  lugarSorteo: "",           // lugar del sorteo
+  modalidad: "",             // ej.: "boletas físicas en urna" / "bolillero electrónico"
 
-  // Empresa organizadora (exigido por DNIT)
+  // Empresa organizadora
   empresa: {
-    razonSocial: "",
-    ruc: "",
-    domicilio: "",
-    telefono: "",
-    autorizacionDNIT: ""   // N° de resolución / autorización
+    razonSocial: "VEVIL EAS",
+    ruc: "80161517-8",
+    domicilio: "Alas Paraguayas N° 631, Asunción",
+    telefono: "0991 895 589",
+    autorizacionCONAJZAR: ""   // N° de certificado de autorización
   },
 
-  // Requisito para obtener un cupón
-  requisito: "",           // ej.: "por cada carga de Gs. 150.000 o compra de un producto Vevil"
+  // Mecánica (punto 5° del Anexo I)
+  montoMinimo: "Gs. 100.000",
+  documentoValido: "factura física",
+  comoSeRegistra: "",        // cómo entra la factura al sorteo (urna, cupón, carga online…)
 
+  // Sucursales donde se exhiben los premios (punto 4.3)
   sucursales: [
-    // { nombre: "Tega Oil Centro", direccion: "", mapa: "" }
+    { nombre: "San Lorenzo", direccion: "Avda. Manuel Ortiz Guerrero esq. Puerto Rosario" },
+    { nombre: "Barcequillo – San Lorenzo", direccion: "Avda. Pratt Gill esq. Capitolio" },
+    { nombre: "Tramo Luque – San Bernardino", direccion: "Calle Vergel Luqueño, Barrio Marín Kaaguy" },
+    { nombre: "Ypacaraí", direccion: "Iturbe esq. Paraguay, Barrio Santa Rosa" },
+    { nombre: "Coronel Oviedo", direccion: "Dr. Blas Garay esq. Las Residentas, Ruta 8" }
   ],
 
-  // Premios — se muestran en orden
+  // Premios (punto 4.1)
   premios: [
-    { puesto: "1er premio", titulo: "", detalle: "", imagen: "" },
-    { puesto: "2do premio", titulo: "", detalle: "", imagen: "" },
-    { puesto: "3er premio", titulo: "", detalle: "", imagen: "" }
+    { etiqueta: "Año 2026", titulo: "Cuadriciclo AU200", detalle: "Color blanco / naranja · Año 2026", imagen: "" },
+    { etiqueta: "Año 2025", titulo: "Moto CF 125", detalle: "Color gris · Año 2025", imagen: "" },
+    { etiqueta: "Año 2025", titulo: "Moto CF 125", detalle: "Color blanco · Año 2025", imagen: "" },
+    { etiqueta: "Año 2025", titulo: "Moto CF 125", detalle: "Color blanco · Año 2025", imagen: "" },
+    { etiqueta: "Año 2025", titulo: "Moto CF 125", detalle: "Color negro · Año 2025", imagen: "" }
   ],
 
   contacto: {
-    whatsapp: "",          // solo números, ej.: "595981000000"
+    whatsapp: "",          // solo números, ej.: "595991895589"
     instagram: "",         // URL completa
     facebook: ""           // URL completa
   },
@@ -49,7 +62,7 @@ window.SORTEO = {
      al modo "ganadores".
      -------------------------------------------------------- */
   ganadores: [
-    // { premio: "1er premio", nombre: "Juan P.", ciudad: "Asunción", foto: "assets/img/ganadores/1.jpg" }
+    // { premio: "Cuadriciclo AU200", nombre: "Juan P.", ciudad: "Asunción", foto: "assets/img/ganadores/1.jpg" }
   ],
   videoSorteo: ""          // URL de YouTube/Instagram del sorteo en vivo (opcional)
 };

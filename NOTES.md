@@ -8,18 +8,24 @@ Sitio estático (HTML/CSS/JS vanilla) para GitHub Pages.
 2. Completar `ganadores: [...]` en `config.js` (y `videoSorteo` si hay video).
 3. Push. Apenas hay al menos un ganador, el sitio cambia solo: el hero dice "¡Ya tenemos ganadores!", se muestra la galería y se oculta "Cómo participar" y la cuenta regresiva.
 
+## Datos cargados (Anexo I CONAJZAR firmado)
+- Promo: **Vevil Premia tu Preferencia** — alcance nacional — 10/11/2026 al 31/03/2027
+- Organizador: VEVIL EAS, RUC 80161517-8, Alas Paraguayas N° 631, Asunción, 0991 895 589
+- Mecánica: compra de Gs. 100.000 en cualquier producto de la EESS; documento válido: factura física
+- Premios: 4 Motos CF 125 (gris, blanco, blanco, negro — 2025) + 1 Cuadriciclo AU200 (blanco/naranja — 2026)
+- Sorteo: 31/03/2027 — Lista de ganadores: 02/04/2027
+- Exhibición: 5 sucursales (San Lorenzo, Barcequillo, Tramo Luque–San Bernardino, Ypacaraí, Cnel. Oviedo)
+- No se publican la CI ni el nombre de la representante legal.
+
 ## Pendientes del cliente
-- [ ] Nombre oficial de la promoción y eslogan
-- [ ] Fecha de inicio, cierre de participación, fecha/hora y **lugar** del sorteo
-- [ ] Modalidad del sorteo (boletas físicas / bolillero electrónico / escribano)
-- [ ] Requisito para obtener el cupón (monto de carga, producto Vevil, etc.)
-- [ ] Premios: marca, modelo, cantidad, características + fotos
-- [ ] Razón social, RUC, domicilio, teléfono
-- [ ] N° de autorización DNIT
-- [ ] Estaciones participantes (nombre + dirección)
+- [ ] **N° de certificado de autorización CONAJZAR** (obligatorio en avisos)
+- [ ] Hora y **lugar** del sorteo
+- [ ] Modalidad (boletas físicas / bolillero electrónico)
+- [ ] Cómo se registra la factura (¿urna en la estación? ¿se escribe nombre/CI/teléfono atrás?)
+- [ ] Marca de las motos "CF 125" y del cuadriciclo (en el Anexo dice "CUACICLON AU200" — confirmar nombre) + fotos de los premios
+- [ ] ¿Las 5 sucursales de exhibición son todas las estaciones participantes?
 - [ ] WhatsApp, Instagram, Facebook
-- [ ] Bases y condiciones firmadas (el texto del sitio es un **borrador** según las 8 cláusulas DNIT — debe revisarlo el abogado/escribano)
-- [ ] Logo de Vevil en vector (SVG/PNG transparente) — el actual está recortado de una imagen JPG
+- [ ] Logo de Vevil en vector (SVG/PNG transparente)
 - [ ] ¿La foto de la estación es real o un render?
 - [ ] Licencia web de la tipografía Nexa (por ahora se usa Urbanist de Google Fonts)
 

@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gran Sorteo Tega Oil × Vevil</title>
-  <meta name="description" content="Participá del gran sorteo de Tega Oil y Vevil. Conocé los premios, cómo participar y las bases y condiciones.">
+  <title>Vevil Premia tu Preferencia — Tega Oil</title>
+  <meta name="description" content="Comprá desde Gs. 100.000 en estaciones Tega Oil y participá por 4 motos CF 125 y un cuadriciclo AU200. Sorteo el 31 de marzo de 2027.">
   <meta name="theme-color" content="#0B0A0D">
-  <meta property="og:title" content="Gran Sorteo Tega Oil × Vevil">
-  <meta property="og:description" content="Cargá, participá y ganá.">
+  <meta property="og:title" content="Vevil Premia tu Preferencia — Tega Oil">
+  <meta property="og:description" content="4 motos y un cuadriciclo. Sorteo el 31 de marzo de 2027.">
   <meta property="og:image" content="assets/img/estacion.jpg">
   <link rel="icon" href="assets/img/tega-iso.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,6 +30,7 @@
         <a href="#premios">Premios</a>
         <a href="#participar" class="only-pre">Cómo participar</a>
         <a href="#fechas">Fechas</a>
+        <a href="#sucursales">Sucursales</a>
         <a href="#bases">Bases y condiciones</a>
         <a href="#faq">Preguntas</a>
       </nav>
@@ -80,7 +81,8 @@
       <div class="container">
         <div class="section__head">
           <p class="kicker">Premios</p>
-          <h2>Esto es lo que podés ganar</h2>
+          <h2>5 premios para ganar</h2>
+          <p class="section__sub">4 motos CF 125 y un cuadriciclo AU200, en exhibición en nuestras sucursales.</p>
         </div>
         <div class="prizes" id="prizesGrid"></div>
       </div>
@@ -96,26 +98,26 @@
         <ol class="steps">
           <li class="step">
             <span class="step__n">01</span>
-            <h3>Cargá o comprá</h3>
-            <p id="stepReq"></p>
+            <h3>Comprá desde Gs. 100.000</h3>
+            <p>En cualquiera de los productos de las estaciones Tega Oil: combustible, lubricantes o tienda.</p>
           </li>
           <li class="step">
             <span class="step__n">02</span>
-            <h3>Recibí tu cupón</h3>
-            <p>Pedí tu cupón en caja al momento de pagar, en cualquier estación Tega Oil participante.</p>
+            <h3>Pedí tu factura física</h3>
+            <p>Es el único documento válido para participar. Guardala bien: también la vas a necesitar si ganás.</p>
           </li>
           <li class="step">
             <span class="step__n">03</span>
-            <h3>Completá tus datos</h3>
-            <p>Escribí nombre, cédula y teléfono de forma clara y depositá el cupón en la urna.</p>
+            <h3>Registrá tu participación</h3>
+            <p id="stepReg"></p>
           </li>
           <li class="step">
             <span class="step__n">04</span>
             <h3>¡Esperá el sorteo!</h3>
-            <p>Mientras más cupones, más chances. Seguinos en redes para ver el sorteo en vivo.</p>
+            <p id="stepDraw"></p>
           </li>
         </ol>
-        <p class="note center">Participan solo mayores de 18 años con cédula de identidad paraguaya o documento válido.</p>
+        <p class="note center">Mientras más compras, más chances. Participan solo mayores de 18 años.</p>
       </div>
     </section>
 
@@ -130,13 +132,25 @@
       </div>
     </section>
 
+    <!-- SUCURSALES -->
+    <section class="section" id="sucursales">
+      <div class="container">
+        <div class="section__head">
+          <p class="kicker">Sucursales</p>
+          <h2>Vení a ver los premios</h2>
+          <p class="section__sub">Los premios están en exhibición en estas estaciones Tega Oil.</p>
+        </div>
+        <div class="branches" id="branches"></div>
+      </div>
+    </section>
+
     <!-- BASES Y CONDICIONES -->
     <section class="section section--alt" id="bases">
       <div class="container container--narrow">
         <div class="section__head">
           <p class="kicker">Legal</p>
           <h2>Bases y condiciones</h2>
-          <p class="section__sub">Promoción autorizada por la DNIT — <span id="dnitNum"></span></p>
+          <p class="section__sub">Promoción autorizada por la Comisión Nacional de Juegos de Azar (CONAJZAR) — <span id="authNum"></span></p>
         </div>
         <div class="accordion" id="basesList"></div>
       </div>
@@ -161,8 +175,8 @@
         <img src="assets/img/vevil-logo.png?v=2" alt="Vevil" class="footer__vevil">
       </div>
       <div class="footer__social" id="social"></div>
-      <p class="footer__legal">Prohibida la participación de menores de 18 años. Promoción sujeta a las bases y condiciones autorizadas por la DNIT.</p>
-      <p class="footer__copy">© <span id="year"></span> Tega Oil. Todos los derechos reservados.</p>
+      <p class="footer__legal" id="footerLegal"></p>
+      <p class="footer__copy">© <span id="year"></span> Tega Oil · Vevil. Todos los derechos reservados.</p>
     </div>
   </footer>
 
