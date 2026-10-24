@@ -3,8 +3,8 @@
   const $ = (s, el = document) => el.querySelector(s);
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
-  // Valor o marcador [PENDIENTE]
-  const P = (val, label) => (val ? esc(val) : `<span class="pend">[PENDIENTE: ${label}]</span>`);
+  // Valor opcional: si falta, no se muestra nada
+  const P = (val) => (val ? esc(val) : "");
 
   // "2027-03-31" (+ "19:00") → Date en horario de Paraguay
   const toDate = (day, time) => new Date(`${day}T${time || "00:00"}:00-03:00`);
@@ -13,10 +13,10 @@
     return s.charAt(0).toUpperCase() + s.slice(1);
   };
   const D = (day, label) => (day ? esc(fmtDay(day)) : P("", label));
-  const drawWhen = () => `${D(C.fechaSorteo, "fecha del sorteo")}${C.horaSorteo ? `, ${esc(C.horaSorteo)} hs` : ` · ${P("", "hora")}`}`;
+  const drawWhen = () => `${D(C.fechaSorteo, "fecha del sorteo")}${C.horaSorteo ? `, ${esc(C.horaSorteo)} hs` : ""}`;
 
   const E = C.empresa;
-  const authNum = P(E.autorizacionCONAJZAR, "N° de certificado CONAJZAR");
+  const authNum = P(E.autorizacionCONAJZAR);
 
   // ---------- Estado: pre-sorteo o ganadores ----------
   const hasWinners = Array.isArray(C.ganadores) && C.ganadores.length > 0;
@@ -77,16 +77,14 @@
     </article>`).join("");
 
   // ---------- Pasos ----------
-  $("#stepReg").innerHTML = C.comoSeRegistra
-    ? esc(C.comoSeRegistra)
-    : `Con tu factura física participás automáticamente. ${P("", "cómo se registra la factura")}`;
+  if (C.comoSeRegistra) $("#stepReg").textContent = C.comoSeRegistra;
   $("#stepDraw").innerHTML = `El sorteo es el ${D(C.fechaSorteo, "fecha")} y la lista de ganadores se publica el ${D(C.listaGanadores, "fecha")}.`;
 
   // ---------- Fechas ----------
   const events = [
     { t: "Inicio de la promoción", d: C.inicio, v: D(C.inicio, "fecha de inicio") },
     { t: "Cierre de la promoción", d: C.cierre, v: D(C.cierre, "fecha de cierre") },
-    { t: "Gran sorteo", d: C.fechaSorteo, v: `${drawWhen()}<br><small>${P(C.lugarSorteo, "lugar del sorteo")}</small>` },
+    { t: "Gran sorteo", d: C.fechaSorteo, v: `${drawWhen()}${C.lugarSorteo ? `<br><small>${esc(C.lugarSorteo)}</small>` : ""}` },
     { t: "Lista de ganadores", d: C.listaGanadores, v: `${D(C.listaGanadores, "fecha")}<br><small>Retiro de premios: hasta 60 días</small>` }
   ];
   $("#timeline").innerHTML = events.map((e) => `
@@ -116,22 +114,22 @@
       <p>Alcance: ${esc(C.alcance)}. Vigencia: desde el ${D(C.inicio, "inicio")} hasta el ${D(C.cierre, "cierre")}.</p>`],
     ["2. Reconocimiento de la CONAJZAR", `
       <p>El organizador reconoce y acepta a la Comisión Nacional de Juegos de Azar (CONAJZAR) como institución encargada de la supervisión, auditoría y control del desarrollo y gestión de esta promoción.</p>
-      <p>Toda situación no prevista en estas bases que pudiera derivar en un conflicto entre el organizador y los participantes podrá ser resuelta a pedido de las partes por la CONAJZAR, quedando expedita la vía jurisdiccional en caso de que los interesados así lo consideren para la mejor defensa de sus derechos.</p>
-      <p>Certificado de autorización CONAJZAR: ${authNum}.</p>`],
+      <p>Toda situación no prevista en estas bases que pudiera derivar en un conflicto entre el organizador y los participantes podrá ser resuelta a pedido de las partes por la CONAJZAR, quedando expedita la vía jurisdiccional en caso de que los interesados así lo consideren para la mejor defensa de sus derechos.</p>${authNum ? `
+      <p>Certificado de autorización CONAJZAR: ${authNum}.</p>` : ""}`],
     ["3. Quiénes pueden participar", `
       <p>Pueden participar personas físicas <strong>mayores de 18 años</strong> que cumplan con la mecánica descrita en estas bases. <strong>No pueden participar menores de 18 años.</strong></p>`],
     ["4. Mecánica del juego", `
-      <p>El cliente accede a participar del sorteo con la <strong>compra de ${esc(C.montoMinimo)}</strong> de cualquiera de los productos comercializados por la estación de servicio. El documento válido será la <strong>${esc(C.documentoValido)}</strong>.</p>
-      <p>Registro de la participación: ${P(C.comoSeRegistra, "cómo se registra la factura")}.</p>
-      <p>Modalidad del sorteo: ${P(C.modalidad, "boletas físicas / bolillero electrónico")}.</p>`],
+      <p>El cliente accede a participar del sorteo con la <strong>compra de ${esc(C.montoMinimo)}</strong> de cualquiera de los productos comercializados por la estación de servicio. El documento válido será la <strong>${esc(C.documentoValido)}</strong>.</p>${C.comoSeRegistra ? `
+      <p>Registro de la participación: ${esc(C.comoSeRegistra)}.</p>` : ""}${C.modalidad ? `
+      <p>Modalidad del sorteo: ${esc(C.modalidad)}.</p>` : ""}`],
     ["5. Premios", `
       <p>Serán sorteados los siguientes bienes:</p>
       <ul>${C.premios.map((p) => `<li>1 ${esc(p.titulo)} – ${esc(p.detalle)}</li>`).join("")}</ul>
       <p>Los bienes serán depositados para su exhibición en las sucursales de:</p>${sucList}
       <p>Conforme al Art. 18 de la Ley N° 1016/1997, todos los premios son de propiedad del organizador o éste acredita la facultad suficiente para transferir el dominio. En los casos de premios cuya transferencia de dominio deba efectuarse por escritura pública, el organizador realizará la transferencia de la propiedad dentro del plazo máximo de siete (7) días de la fecha del sorteo, sin cargo para el beneficiario.</p>`],
     ["6. Fecha y lugar del sorteo", `
-      <p>Fecha del sorteo: <strong>${drawWhen()}</strong>.</p>
-      <p>Lugar: ${P(C.lugarSorteo, "lugar del sorteo")}.</p>
+      <p>Fecha del sorteo: <strong>${drawWhen()}</strong>.</p>${C.lugarSorteo ? `
+      <p>Lugar: ${esc(C.lugarSorteo)}.</p>` : ""}
       <p>Fecha de entrega de la lista de ganadores: <strong>${D(C.listaGanadores, "fecha")}</strong>. Los ganadores serán publicados en este sitio y en las redes oficiales.</p>`],
     ["7. Plazo para retirar los premios", `
       <p>Los ganadores dispondrán del plazo establecido en el <strong>Art. 19 de la Ley N° 1016/97</strong> (60 días) para retirar su premio, presentando su cédula de identidad y la factura física ganadora.</p>
@@ -140,8 +138,8 @@
       <p>Esta promoción se rige por la Ley N° 1016/1997 de Juegos de Azar —en especial sus Arts. 17, 18 y 19— y sus reglamentaciones. La explotación de juegos de azar no autorizados es sancionada conforme al Art. 17, numeral 1° de la Ley N° 4716/12.</p>
       <p>La participación implica la aceptación total de estas bases y condiciones.</p>`]
   ];
-  $("#authNum").innerHTML = authNum;
-  $("#footerLegal").innerHTML = `Promoción “${esc(C.nombre)}” organizada por ${esc(E.razonSocial)} (RUC ${esc(E.ruc)}). Autorizada por la CONAJZAR — Certificado N° ${authNum}. Arts. 17, 18 y 19 de la Ley N° 1016/1997. Prohibida la participación de menores de 18 años.`;
+  if (authNum) $("#authNum").innerHTML = ` — Certificado N° ${authNum}`;
+  $("#footerLegal").innerHTML = `Promoción “${esc(C.nombre)}” organizada por ${esc(E.razonSocial)} (RUC ${esc(E.ruc)}). Autorizada por la CONAJZAR${authNum ? ` — Certificado N° ${authNum}` : ""}. Arts. 17, 18 y 19 de la Ley N° 1016/1997. Prohibida la participación de menores de 18 años.`;
 
   const faq = [
     ["¿Cuánto tengo que comprar para participar?", `Desde ${esc(C.montoMinimo)} en cualquier producto de las estaciones Tega Oil: combustible, lubricantes o tienda.`],
@@ -196,7 +194,8 @@
   if (K.instagram) social.push(`<a href="${esc(K.instagram)}" target="_blank" rel="noopener">Instagram</a>`);
   if (K.facebook) social.push(`<a href="${esc(K.facebook)}" target="_blank" rel="noopener">Facebook</a>`);
   if (K.whatsapp) social.push(`<a href="https://wa.me/${esc(K.whatsapp)}" target="_blank" rel="noopener">WhatsApp</a>`);
-  $("#social").innerHTML = social.length ? social.join("") : P("", "redes y WhatsApp");
+  if (social.length) $("#social").innerHTML = social.join("");
+  else $("#social").remove();
   if (K.whatsapp) {
     const w = $("#waFloat");
     w.href = `https://wa.me/${K.whatsapp}?text=${encodeURIComponent("Hola! Tengo una consulta sobre la promo " + C.nombre)}`;

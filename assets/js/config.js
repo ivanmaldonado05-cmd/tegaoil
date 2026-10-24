@@ -1,6 +1,6 @@
 /* ==========================================================
    CONFIGURACIÓN DEL SORTEO — editar solo este archivo
-   Campos vacíos ("") se muestran en el sitio como [PENDIENTE].
+   Campos vacíos ("") simplemente no se muestran en el sitio.
    Horario de Paraguay: UTC-03:00
    Fuente: Anexo I CONAJZAR firmado (Res. CONAJZAR N° 21/2011)
    ========================================================== */

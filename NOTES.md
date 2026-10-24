@@ -1,7 +1,7 @@
 # Tega Oil × Vevil — Sorteo
 
 Sitio estático (HTML/CSS/JS vanilla) para GitHub Pages.
-**Todo el contenido se edita en `assets/js/config.js`.** Lo que esté vacío aparece en el sitio como `[PENDIENTE]`.
+**Todo el contenido se edita en `assets/js/config.js`.** Los campos opcionales vacíos no se muestran.
 
 ## Cómo pasar al modo "ganadores"
 1. Subir las fotos a `assets/img/ganadores/` (cuadradas, ~800×800, JPG).
@@ -17,17 +17,10 @@ Sitio estático (HTML/CSS/JS vanilla) para GitHub Pages.
 - Exhibición: 5 sucursales (San Lorenzo, Barcequillo, Tramo Luque–San Bernardino, Ypacaraí, Cnel. Oviedo)
 - No se publican la CI ni el nombre de la representante legal.
 
-## Pendientes del cliente
-- [ ] **N° de certificado de autorización CONAJZAR** (obligatorio en avisos)
-- [ ] Hora y **lugar** del sorteo
-- [ ] Modalidad (boletas físicas / bolillero electrónico)
-- [ ] Cómo se registra la factura (¿urna en la estación? ¿se escribe nombre/CI/teléfono atrás?)
-- [ ] Marca de las motos "CF 125" y del cuadriciclo (en el Anexo dice "CUACICLON AU200" — confirmar nombre) + fotos de los premios
-- [ ] ¿Las 5 sucursales de exhibición son todas las estaciones participantes?
-- [ ] WhatsApp, Instagram, Facebook
-- [ ] Logo de Vevil en vector (SVG/PNG transparente)
-- [ ] ¿La foto de la estación es real o un render?
-- [ ] Licencia web de la tipografía Nexa (por ahora se usa Urbanist de Google Fonts)
+## Pendiente
+- [ ] Fotos de los premios → `assets/img/premios/` y completar `imagen` en `config.js` (cuadriciclo: horizontal 16:9; motos: 4:3)
+
+El cliente confirmó (24/10/2026) que no hay más datos. Campos opcionales en `config.js` (hora, lugar, modalidad, N° CONAJZAR, redes) quedan vacíos y no se muestran; si llegan, se completan ahí y aparecen solos.
 
 ## Marca
 - Base: negro `#0B0A0D` + violeta neón `#9803FB` / `#B44DFF` (señalética de la estación) + morado manual `#44063E`
