@@ -19,7 +19,7 @@ Sitio estático (HTML/CSS/JS vanilla) para GitHub Pages.
 
 ## Fotos de premios
 - Recortadas desde las imágenes del cliente → `assets/img/premios/` (motos CFMOTO Papio, cuadriciclo blanco/naranja)
-- No hay foto de la moto **negra**: usa la misma foto que la gris (`moto-cf125-gris.jpg`). Reemplazar si llega.
+- Asignación confirmada por el cliente (Vero, Tega Oil): blancas = Papio SS blanca (x2), gris = Papio blanca/negra, negra = Papio negra/amarilla
 
 El cliente confirmó (24/10/2026) que no hay más datos. Campos opcionales en `config.js` (hora, lugar, modalidad, N° CONAJZAR, redes) quedan vacíos y no se muestran; si llegan, se completan ahí y aparecen solos.
 
