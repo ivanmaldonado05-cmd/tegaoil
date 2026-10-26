@@ -65,8 +65,8 @@
   // ---------- Premios ----------
   $("#prizesGrid").innerHTML = C.premios.map((p, i) => `
     <article class="prize ${i === 0 ? "prize--main" : ""}">
-      <div class="prize__media">
-        ${p.imagen ? `<img src="${esc(p.imagen)}" alt="${esc(p.titulo)}" loading="lazy">`
+      <div class="prize__media${p.imagen ? " prize__media--photo" : ""}">
+        ${p.imagen ? `<img src="${esc(p.imagen)}" alt="${esc(p.titulo + " — " + p.detalle)}" class="prize__photo" loading="lazy">`
                    : `<img src="assets/img/tega-iso.svg" alt="" class="prize__ph">`}
       </div>
       <div class="prize__body">

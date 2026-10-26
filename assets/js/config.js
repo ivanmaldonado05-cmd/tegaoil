@@ -43,11 +43,11 @@ window.SORTEO = {
 
   // Premios (punto 4.1)
   premios: [
-    { etiqueta: "Año 2026", titulo: "Cuadriciclo AU200", detalle: "Color blanco / naranja · Año 2026", imagen: "" },
-    { etiqueta: "Año 2025", titulo: "Moto CF 125", detalle: "Color gris · Año 2025", imagen: "" },
-    { etiqueta: "Año 2025", titulo: "Moto CF 125", detalle: "Color blanco · Año 2025", imagen: "" },
-    { etiqueta: "Año 2025", titulo: "Moto CF 125", detalle: "Color blanco · Año 2025", imagen: "" },
-    { etiqueta: "Año 2025", titulo: "Moto CF 125", detalle: "Color negro · Año 2025", imagen: "" }
+    { etiqueta: "Año 2026", titulo: "Cuadriciclo AU200", detalle: "Color blanco / naranja · Año 2026", imagen: "assets/img/premios/cuadriciclo-au200.jpg" },
+    { etiqueta: "Año 2025", titulo: "Moto CF 125", detalle: "Color gris · Año 2025", imagen: "assets/img/premios/moto-cf125-gris.jpg" },
+    { etiqueta: "Año 2025", titulo: "Moto CF 125", detalle: "Color blanco · Año 2025", imagen: "assets/img/premios/moto-cf125-blanca-1.jpg" },
+    { etiqueta: "Año 2025", titulo: "Moto CF 125", detalle: "Color blanco · Año 2025", imagen: "assets/img/premios/moto-cf125-blanca-2.jpg" },
+    { etiqueta: "Año 2025", titulo: "Moto CF 125", detalle: "Color negro · Año 2025", imagen: "assets/img/premios/moto-cf125-gris.jpg" }
   ],
 
   contacto: {

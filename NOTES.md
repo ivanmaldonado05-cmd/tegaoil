@@ -17,8 +17,9 @@ Sitio estático (HTML/CSS/JS vanilla) para GitHub Pages.
 - Exhibición: 5 sucursales (San Lorenzo, Barcequillo, Tramo Luque–San Bernardino, Ypacaraí, Cnel. Oviedo)
 - No se publican la CI ni el nombre de la representante legal.
 
-## Pendiente
-- [ ] Fotos de los premios → `assets/img/premios/` y completar `imagen` en `config.js` (cuadriciclo: horizontal 16:9; motos: 4:3)
+## Fotos de premios
+- Recortadas desde las imágenes del cliente → `assets/img/premios/` (motos CFMOTO Papio, cuadriciclo blanco/naranja)
+- No hay foto de la moto **negra**: usa la misma foto que la gris (`moto-cf125-gris.jpg`). Reemplazar si llega.
 
 El cliente confirmó (24/10/2026) que no hay más datos. Campos opcionales en `config.js` (hora, lugar, modalidad, N° CONAJZAR, redes) quedan vacíos y no se muestran; si llegan, se completan ahí y aparecen solos.
 

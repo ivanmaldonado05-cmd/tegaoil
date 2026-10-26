@@ -437,3 +437,25 @@ body.is-winners .only-pre { display: none !important; }
   .prizes { grid-template-columns: 1fr; }
   .branches { grid-template-columns: 1fr; }
 }
+
+/* ---------- Fotos de premios (fondo blanco del proveedor) ---------- */
+.prize__media--photo {
+  position: relative;
+  background: radial-gradient(ellipse at 50% 45%, #ffffff 0%, #f4f1f8 55%, #e6e0ee 100%);
+  padding: 18px;
+  overflow: hidden;
+}
+.prize__media--photo::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+  background: var(--grad-violet); box-shadow: 0 0 18px var(--violet);
+}
+.prize__media--photo img.prize__photo {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  transition: transform .5s ease;
+}
+.prize:hover .prize__photo { transform: scale(1.05); }
+.prize--main .prize__media--photo { padding: 28px; }
+.prize__media--photo img.prize__photo { position: absolute; inset: 18px; width: calc(100% - 36px); height: calc(100% - 36px); }
+.prize--main .prize__media--photo img.prize__photo { inset: 24px; width: calc(100% - 48px); height: calc(100% - 48px); }
