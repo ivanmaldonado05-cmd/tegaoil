@@ -96,3 +96,17 @@ Fuente: `Bases y Condiciones CONAJZAR.docx` del cliente (transcriptas en el siti
 
 ### Caché
 Hostinger/CDN guarda JS/CSS 7 días. Todos los `<script>`/`<link>` llevan `?v=AAAAMMDDHHMM`: **al cambiar cualquier JS/CSS, actualizar la versión** (comando en el historial de commits: sed sobre index/en-vivo/condiciones/admin/*.html). Las páginas .html se sirven con `no-cache`.
+
+## Premio por sucursal + panel unificado (29/10/2026)
+- **Cada premio se sortea solo entre los cupones de su sucursal.** 1 premio por persona (si ya salió en una, queda afuera de las demás).
+- Asignación (se edita en **dos lugares**: `server/lib.php` → `TG_PRIZES[...]['sucursal']` con el texto exacto de `TG_SUCURSALES`, y `assets/js/config.js` → `premios[].sucursal` con el nombre corto):
+  - Cuadriciclo AU200 → Tramo Luque – San Bernardino
+  - Moto gris → San Lorenzo (Ortiz Guerrero)
+  - Moto blanca → Coronel Oviedo
+  - Moto blanca → **pendiente** (Barcequillo o Ypacaraí)
+  - Moto negra → **pendiente** (Barcequillo o Ypacaraí)
+  - Un premio sin sucursal no se puede sortear (botón bloqueado).
+- La lista cerrada guarda [id, cédula, sucursal]; la huella es SHA-256 de "id|cédula|sucursal".
+- Al revisar una factura, el panel permite **corregir la sucursal** (queda en el historial).
+- **3 links:** sitio `veviltegaoil.com` · público en vivo `/en-vivo.html` · panel `/admin/` (pestañas Participaciones / Sorteo; `admin/sorteo.html` redirige a `/admin/#sorteo`). Acta: botón dentro de la pestaña Sorteo.
+- ⚠️ Las bases presentadas a CONAJZAR no mencionan premios por sucursal: el cliente debe confirmar/actualizar (cláusula 15).

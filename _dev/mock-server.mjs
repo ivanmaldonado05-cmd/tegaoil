@@ -16,11 +16,11 @@ const DATA = path.join(ROOT, "_dev", "data");
 fs.mkdirSync(DATA, { recursive: true });
 
 const PRIZES = [
-  { id: "cuadriciclo", titulo: "Cuadriciclo AU200", detalle: "Color blanco / naranja · Año 2026" },
-  { id: "moto-gris", titulo: "Moto CF 125", detalle: "Color gris · Año 2025" },
-  { id: "moto-blanca-1", titulo: "Moto CF 125", detalle: "Color blanco · Año 2025" },
-  { id: "moto-blanca-2", titulo: "Moto CF 125", detalle: "Color blanco · Año 2025" },
-  { id: "moto-negra", titulo: "Moto CF 125", detalle: "Color negro · Año 2025" },
+  { id: "cuadriciclo", titulo: "Cuadriciclo AU200", detalle: "Color blanco / naranja · Año 2026", sucursal: "Tramo Luque – San Bernardino — Calle Vergel Luqueño" },
+  { id: "moto-gris", titulo: "Moto CF 125", detalle: "Color gris · Año 2025", sucursal: "San Lorenzo — Avda. Manuel Ortiz Guerrero esq. Puerto Rosario" },
+  { id: "moto-blanca-1", titulo: "Moto CF 125", detalle: "Color blanco · Año 2025", sucursal: "Coronel Oviedo — Dr. Blas Garay esq. Las Residentas" },
+  { id: "moto-blanca-2", titulo: "Moto CF 125", detalle: "Color blanco · Año 2025", sucursal: "" },
+  { id: "moto-negra", titulo: "Moto CF 125", detalle: "Color negro · Año 2025", sucursal: "" },
 ];
 const ROLES = ["ganador", "suplente1"];
 const SUCURSALES = [
@@ -92,6 +92,8 @@ function session(req, res) {
   return sessions.get(sid);
 }
 
+// cupones habilitados para un premio: de su sucursal y de personas que no salieron sorteadas
+const prizePool = (p, drawn) => (!p.sucursal || !db.draw) ? [] : db.draw.snapshot.filter((r) => r[2] === p.sucursal && !drawn.has(r[1]));
 function drawState() {
   const drawn = new Set(db.results.map((r) => r.ci));
   const prizes = PRIZES.map((p) => {
@@ -99,7 +101,8 @@ function drawState() {
       const e = db.entries.find((x) => x.id === r.entry_id);
       return { rol: r.rol, numero: numero(e.id), nombre: `${e.nombre} ${e.apellido}`, ci_mask: maskCi(e.ci), sucursal: e.sucursal, pool: r.pool, at: r.created_at };
     });
-    return { ...p, results: res, next: ROLES[res.length] || null };
+    const eligible = !p.sucursal ? 0 : db.draw ? prizePool(p, drawn).length : db.entries.filter((e) => e.estado === "aprobada" && e.sucursal === p.sucursal).length;
+    return { ...p, results: res, next: ROLES[res.length] || null, eligible };
   });
   const snap = db.draw?.snapshot || [];
   return {
@@ -155,10 +158,14 @@ async function apiHandler(req, res, url) {
 
   if (action === "draw.public") {
     const st = drawState();
-    const prizes = st.prizes.map((p) => ({ id: p.id, titulo: p.titulo, detalle: p.detalle, next: p.next, results: p.results.map((r) => ({ ...r, sucursal: r.sucursal.split(" — ")[0] })) }));
-    const snap = db.draw?.snapshot || [];
-    const reel = snap.length ? Array.from({ length: Math.min(30, snap.length) }, () => { const id = snap[crypto.randomInt(snap.length)][0]; const e = db.entries.find((x) => x.id === id); return shortName(e.nombre, e.apellido); }) : [];
-    return send(res, 200, { ok: true, draw: { sealed: st.sealed, sealed_at: st.sealed_at, total: st.total, hash: st.hash, eligible: st.eligible, count: db.results.length, prizes }, reel });
+    const drawn = new Set(db.results.map((r) => r.ci));
+    const prizes = st.prizes.map((p) => {
+      const pool = prizePool(p, drawn);
+      const reel = Array.from({ length: Math.min(25, pool.length) }, () => { const id = pool[crypto.randomInt(pool.length)][0]; const e = db.entries.find((x) => x.id === id); return shortName(e.nombre, e.apellido); });
+      return { id: p.id, titulo: p.titulo, detalle: p.detalle, next: p.next, sucursal: p.sucursal ? p.sucursal.split(" — ")[0] : "", eligible: p.eligible, reel,
+        results: p.results.map((r) => ({ ...r, sucursal: r.sucursal.split(" — ")[0] })) };
+    });
+    return send(res, 200, { ok: true, draw: { sealed: st.sealed, sealed_at: st.sealed_at, total: st.total, hash: st.hash, eligible: st.eligible, count: db.results.length, prizes } });
   }
 
   if (action === "session") return send(res, 200, { ok: true, auth: s.auth, csrf: s.csrf, user: s.user || null });
@@ -192,6 +199,8 @@ async function apiHandler(req, res, url) {
     const c = (k) => db.entries.filter((e) => e.estado === k).length;
     return send(res, 200, { ok: true, entries: rows, total: list.length, page, per,
       counts: { pendiente: c("pendiente"), aprobada: c("aprobada"), rechazada: c("rechazada"), personas: new Set(db.entries.filter((e) => e.estado === "aprobada").map((e) => e.ci)).size },
+      por_sucursal: SUCURSALES.map((x) => { const p = PRIZES.find((q) => q.sucursal === x); return { sucursal: x, aprobadas: db.entries.filter((e) => e.estado === "aprobada" && e.sucursal === x).length, premio: p ? `${p.titulo} · ${p.detalle}` : null }; }),
+      sucursales: SUCURSALES,
       registro: registro() });
   }
 
@@ -239,15 +248,17 @@ async function apiHandler(req, res, url) {
       const e = db.entries.find((x) => x.id === Number(b.id));
       if (!e) return fail(422, "No encontrada");
       if (b.estado === "rechazada" && !b.motivo) return fail(422, "Indicá el motivo del rechazo.");
-      Object.assign(e, { estado: b.estado, motivo: b.estado === "rechazada" ? b.motivo : "", nro_factura: b.nro_factura || "", reviewed_at: pyNow(), reviewed_by: s.user });
-      addLog(s.user, "review", { id: e.id, estado: b.estado, motivo: e.motivo, nro_factura: e.nro_factura });
+      if (b.sucursal && !SUCURSALES.includes(b.sucursal)) return fail(422, "Sucursal inválida.");
+      const prev = e.sucursal;
+      Object.assign(e, { estado: b.estado, motivo: b.estado === "rechazada" ? b.motivo : "", nro_factura: b.nro_factura || "", sucursal: b.sucursal || e.sucursal, reviewed_at: pyNow(), reviewed_by: s.user });
+      addLog(s.user, "review", { id: e.id, estado: b.estado, motivo: e.motivo, nro_factura: e.nro_factura, ...(e.sucursal !== prev ? { sucursal: e.sucursal, sucursal_antes: prev } : {}) });
       return send(res, 200, { ok: true });
     }
     case "draw.seal": {
       if (db.draw) return fail(422, "La lista ya está cerrada.");
-      const snap = db.entries.filter((e) => e.estado === "aprobada").sort((a, b) => a.id - b.id).map((e) => [e.id, e.ci]);
+      const snap = db.entries.filter((e) => e.estado === "aprobada").sort((a, b) => a.id - b.id).map((e) => [e.id, e.ci, e.sucursal]);
       if (!snap.length) return fail(422, "No hay participaciones aprobadas.");
-      const hash = crypto.createHash("sha256").update(snap.map((r) => r[0] + "|" + r[1]).join("\n")).digest("hex");
+      const hash = crypto.createHash("sha256").update(snap.map((r) => r[0] + "|" + r[1] + "|" + r[2]).join("\n")).digest("hex");
       db.draw = { sealed_at: pyNow(), sealed_by: s.user, total: snap.length, hash, snapshot: snap };
       addLog(s.user, "draw.seal", { total: snap.length, hash });
       return send(res, 200, { ok: true, draw: drawState() });
@@ -255,12 +266,13 @@ async function apiHandler(req, res, url) {
     case "draw.spin": {
       const prize = PRIZES.find((p) => p.id === b.prize_id);
       if (!prize) return fail(422, "Premio inválido.");
+      if (!prize.sucursal) return fail(422, "Este premio todavía no tiene sucursal asignada.");
       if (!db.draw) return fail(422, "Primero cerrá la lista de participantes.");
       const rol = ROLES[db.results.filter((r) => r.prize_id === prize.id).length];
       if (!rol) return fail(422, "Este premio ya tiene ganador y suplente.");
       const drawn = new Set(db.results.map((r) => r.ci));
-      const pool = db.draw.snapshot.filter((r) => !drawn.has(r[1]));
-      if (!pool.length) return fail(422, "No quedan participantes habilitados.");
+      const pool = prizePool(prize, drawn);
+      if (!pool.length) return fail(422, "No quedan cupones habilitados en la sucursal de este premio.");
       const pick = pool[crypto.randomInt(pool.length)];
       db.results.push({ prize_id: prize.id, rol, entry_id: pick[0], ci: pick[1], pool: pool.length, created_at: pyNow(), created_by: s.user });
       const w = db.entries.find((x) => x.id === pick[0]);

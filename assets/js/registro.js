@@ -32,6 +32,16 @@
       setStatus("<strong>El registro online estará disponible muy pronto.</strong>", "info");
     });
 
+  // ---------- Premio de la sucursal elegida ----------
+  const C = window.SORTEO || {};
+  form.elements.sucursal.addEventListener("change", (e) => {
+    const nombre = e.target.value.split(" — ")[0];
+    const p = (C.premios || []).find((x) => x.sucursal === nombre);
+    $("#sucHint").innerHTML = p
+      ? `En esta sucursal se sortea: <strong>${p.titulo} · ${p.detalle.split(" · ")[0]}</strong>`
+      : "Participás por el premio de la sucursal donde compraste.";
+  });
+
   // ---------- Formato de cédula y teléfono ----------
   form.elements.ci.addEventListener("input", (e) => {
     const d = e.target.value.replace(/\D/g, "").slice(0, 9);

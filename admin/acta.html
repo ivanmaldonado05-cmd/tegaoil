@@ -48,7 +48,7 @@
   </div>
   <div class="page" id="page"><p class="muted">Cargando…</p></div>
 
-  <script src="common.js?v=202610291429"></script>
+  <script src="common.js?v=202610291449"></script>
   <script>
   (async function () {
     const { api, esc, fmtDate, fmtCi } = window.TG;
@@ -68,8 +68,8 @@
       return roles.map((rol) => {
         const r = rs.find((x) => x.rol === rol);
         return r
-          ? `<tr class="${rol === "ganador" ? "g" : ""}"><td>${esc(p.titulo)}<br><span class="muted">${esc(p.detalle)}</span></td><td>${ROL[rol]}</td><td>${esc(r.nombre)}</td><td>${esc(fmtCi(r.ci))}</td><td>${esc(r.telefono)}</td><td>${esc(r.numero)}</td><td>${esc(fmtDate(r.at))}<br><span class="muted">${r.pool.toLocaleString("es-PY")} habilitadas</span></td></tr>`
-          : `<tr><td>${esc(p.titulo)}<br><span class="muted">${esc(p.detalle)}</span></td><td>${ROL[rol]}</td><td colspan="5" class="pending">Sin sortear</td></tr>`;
+          ? `<tr class="${rol === "ganador" ? "g" : ""}"><td>${esc(p.titulo)}<br><span class="muted">${esc(p.detalle)}${p.sucursal ? "<br>Sucursal " + esc(p.sucursal.split(" — ")[0]) : ""}</span></td><td>${ROL[rol]}</td><td>${esc(r.nombre)}</td><td>${esc(fmtCi(r.ci))}</td><td>${esc(r.telefono)}</td><td>${esc(r.numero)}</td><td>${esc(fmtDate(r.at))}<br><span class="muted">${r.pool.toLocaleString("es-PY")} cupones habilitados</span></td></tr>`
+          : `<tr><td>${esc(p.titulo)}<br><span class="muted">${esc(p.detalle)}${p.sucursal ? "<br>Sucursal " + esc(p.sucursal.split(" — ")[0]) : ""}</span></td><td>${ROL[rol]}</td><td colspan="5" class="pending">Sin sortear</td></tr>`;
       }).join("");
     }).join("");
 
@@ -99,7 +99,7 @@
       : `<p class="pending">La lista todavía no fue cerrada.</p>`}
 
       <h2>Resultados</h2>
-      <p class="muted">Cada resultado fue elegido por el servidor con un generador de números aleatorios criptográficamente seguro, entre las participaciones habilitadas en ese momento. Un ganador y un suplente por premio. Un premio por persona: quien ya salió sorteado no vuelve a participar.</p>
+      <p class="muted">Cada resultado fue elegido por el servidor con un generador de números aleatorios criptográficamente seguro, entre los cupones habilitados <strong>de la sucursal de cada premio</strong> en ese momento. Un ganador y un suplente por premio. Un premio por persona: quien ya salió sorteado no vuelve a participar.</p>
       <table>
         <thead><tr><th>Premio</th><th>Rol</th><th>Nombre</th><th>Cédula</th><th>Teléfono</th><th>Cupón</th><th>Hora</th></tr></thead>
         <tbody>${rows}</tbody>

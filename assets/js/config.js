@@ -40,13 +40,15 @@ window.SORTEO = {
     { nombre: "Coronel Oviedo", direccion: "Dr. Blas Garay esq. Las Residentas, Ruta 8" }
   ],
 
-  // Premios (punto 4.1)
+  // Premios (punto 4.1). Cada premio se sortea SOLO entre las compras de su sucursal.
+  // sucursal: el "nombre" de la lista de sucursales de arriba ("" = todavía sin asignar).
+  // ⚠️ Mantener igual en server/lib.php (TG_PRIZES).
   premios: [
-    { etiqueta: "Año 2026", titulo: "Cuadriciclo AU200", detalle: "Color blanco / naranja · Año 2026", imagen: "assets/img/premios/cuadriciclo-au200.jpg" },
-    { etiqueta: "Año 2025", titulo: "Moto CF 125", detalle: "Color gris · Año 2025", imagen: "assets/img/premios/moto-cf125-gris.jpg" },
-    { etiqueta: "Año 2025", titulo: "Moto CF 125", detalle: "Color blanco · Año 2025", imagen: "assets/img/premios/moto-cf125-blanca.jpg" },
-    { etiqueta: "Año 2025", titulo: "Moto CF 125", detalle: "Color blanco · Año 2025", imagen: "assets/img/premios/moto-cf125-blanca.jpg" },
-    { etiqueta: "Año 2025", titulo: "Moto CF 125", detalle: "Color negro · Año 2025", imagen: "assets/img/premios/moto-cf125-negra.jpg" }
+    { etiqueta: "Año 2026", titulo: "Cuadriciclo AU200", detalle: "Color blanco / naranja · Año 2026", imagen: "assets/img/premios/cuadriciclo-au200.jpg", sucursal: "Tramo Luque – San Bernardino" },
+    { etiqueta: "Año 2025", titulo: "Moto CF 125", detalle: "Color gris · Año 2025", imagen: "assets/img/premios/moto-cf125-gris.jpg", sucursal: "San Lorenzo" },
+    { etiqueta: "Año 2025", titulo: "Moto CF 125", detalle: "Color blanco · Año 2025", imagen: "assets/img/premios/moto-cf125-blanca.jpg", sucursal: "Coronel Oviedo" },
+    { etiqueta: "Año 2025", titulo: "Moto CF 125", detalle: "Color blanco · Año 2025", imagen: "assets/img/premios/moto-cf125-blanca.jpg", sucursal: "" },
+    { etiqueta: "Año 2025", titulo: "Moto CF 125", detalle: "Color negro · Año 2025", imagen: "assets/img/premios/moto-cf125-negra.jpg", sucursal: "" }
   ],
 
   contacto: {

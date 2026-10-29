@@ -81,28 +81,30 @@ try {
     if ($action === 'draw.public') {
         // Sorteo visible en tiempo real en el sitio (bases: "visualizado en tiempo real en la página web")
         $s = tg_draw_state();
-        $prizes = array_map(function ($p) {
-            return ['id' => $p['id'], 'titulo' => $p['titulo'], 'detalle' => $p['detalle'], 'next' => $p['next'],
-                'results' => array_map(function ($r) {
-                    return ['rol' => $r['rol'], 'numero' => $r['numero'], 'nombre' => $r['nombre'], 'ci_mask' => $r['ci_mask'], 'sucursal' => explode(' — ', $r['sucursal'])[0], 'at' => $r['at']];
-                }, $p['results'])];
-        }, $s['prizes']);
-        $reel = [];
-        if ($s['sealed']) {
-            $snap = json_decode((string)tg_draw_row()['snapshot'], true) ?: [];
-            $n = count($snap);
+        $snap = $s['sealed'] ? (json_decode((string)tg_draw_row()['snapshot'], true) ?: []) : [];
+        $drawn = $s['sealed'] ? tg_db()->query('SELECT DISTINCT ci FROM tg_results')->fetchAll(PDO::FETCH_COLUMN) : [];
+        $prizes = array_map(function ($p) use ($snap, $drawn) {
+            // nombres de la tómbola: solo de cupones de la sucursal de ese premio
+            $reel = [];
+            $pool = tg_prize_pool($snap, $drawn, $p['sucursal']);
+            $n = count($pool);
             $ids = [];
-            for ($i = 0; $i < min(30, $n); $i++) $ids[] = (int)$snap[random_int(0, $n - 1)][0];
+            for ($i = 0; $i < min(25, $n); $i++) $ids[] = (int)$pool[random_int(0, $n - 1)][0];
             if ($ids) {
                 $q = tg_db()->prepare('SELECT id, nombre, apellido FROM tg_entries WHERE id IN (' . implode(',', array_fill(0, count($ids), '?')) . ')');
                 $q->execute($ids);
                 foreach ($q->fetchAll() as $r) $reel[] = tg_short_name($r['nombre'], $r['apellido']);
             }
-        }
+            return ['id' => $p['id'], 'titulo' => $p['titulo'], 'detalle' => $p['detalle'], 'next' => $p['next'],
+                'sucursal' => $p['sucursal'] === '' ? '' : explode(' — ', $p['sucursal'])[0], 'eligible' => $p['eligible'], 'reel' => $reel,
+                'results' => array_map(function ($r) {
+                    return ['rol' => $r['rol'], 'numero' => $r['numero'], 'nombre' => $r['nombre'], 'ci_mask' => $r['ci_mask'], 'sucursal' => explode(' — ', $r['sucursal'])[0], 'at' => $r['at']];
+                }, $p['results'])];
+        }, $s['prizes']);
         $count = 0;
         foreach ($prizes as $p) $count += count($p['results']);
         tg_json(['ok' => true, 'draw' => ['sealed' => $s['sealed'], 'sealed_at' => $s['sealed_at'], 'total' => $s['total'], 'hash' => $s['hash'],
-            'eligible' => $s['eligible'], 'count' => $count, 'prizes' => $prizes], 'reel' => $reel]);
+            'eligible' => $s['eligible'], 'count' => $count, 'prizes' => $prizes]]);
     }
 
     /* ================= Sesión del panel ================= */
@@ -167,7 +169,14 @@ try {
         }, $list->fetchAll());
         $counts = $db->query('SELECT estado, COUNT(*) n FROM tg_entries GROUP BY estado')->fetchAll(PDO::FETCH_KEY_PAIR);
         $people = (int)$db->query("SELECT COUNT(DISTINCT ci) FROM tg_entries WHERE estado = 'aprobada'")->fetchColumn();
+        $bySuc = $db->query("SELECT sucursal, COUNT(*) n FROM tg_entries WHERE estado = 'aprobada' GROUP BY sucursal")->fetchAll(PDO::FETCH_KEY_PAIR);
         tg_json(['ok' => true, 'entries' => $rows, 'total' => $total, 'page' => $page, 'per' => $per,
+            'por_sucursal' => array_map(function ($s) use ($bySuc) {
+                $prize = null;
+                foreach (TG_PRIZES as $p) if ($p['sucursal'] === $s) $prize = $p['titulo'] . ' · ' . $p['detalle'];
+                return ['sucursal' => $s, 'aprobadas' => (int)($bySuc[$s] ?? 0), 'premio' => $prize];
+            }, TG_SUCURSALES),
+            'sucursales' => TG_SUCURSALES,
             'counts' => ['pendiente' => (int)($counts['pendiente'] ?? 0), 'aprobada' => (int)($counts['aprobada'] ?? 0), 'rechazada' => (int)($counts['rechazada'] ?? 0), 'personas' => $people],
             'registro' => tg_registro_abierto()]);
     }
@@ -220,9 +229,10 @@ try {
         fwrite($out, "\xEF\xBB\xBF");
         fputcsv($out, ['Lista cerrada el ' . $d['sealed_at'] . ' — ' . $d['total'] . ' participaciones — huella SHA-256: ' . $d['hash']], ';');
         fputcsv($out, ['N° participación', 'Nombre', 'Apellido', 'Cédula', 'Sucursal'], ';');
-        foreach ($snap as [$id, $ci]) {
+        foreach ($snap as $row) {
+            [$id, $ci] = $row;
             $n = $names[$id] ?? ['nombre' => '', 'apellido' => '', 'sucursal' => ''];
-            fputcsv($out, [tg_numero((int)$id), $n['nombre'], $n['apellido'], $ci, $n['sucursal']], ';');
+            fputcsv($out, [tg_numero((int)$id), $n['nombre'], $n['apellido'], $ci, $row[2] ?? $n['sucursal']], ';');
         }
         exit;
     }
@@ -267,16 +277,25 @@ try {
             $motivo = $estado === 'rechazada' ? tg_str($b['motivo'] ?? '', 200) : '';
             if ($estado === 'rechazada' && $motivo === '') throw new InvalidArgumentException('Indicá el motivo del rechazo.');
             $nro = tg_str($b['nro_factura'] ?? '', 40);
-            $db->prepare('UPDATE tg_entries SET estado = ?, motivo = ?, nro_factura = ?, reviewed_at = NOW(), reviewed_by = ? WHERE id = ?')
-               ->execute([$estado, $motivo, $nro, tg_user(), $id]);
-            tg_log('review', ['id' => $id, 'estado' => $estado, 'motivo' => $motivo, 'nro_factura' => $nro]);
+            // el revisor puede corregir la sucursal si no coincide con la de la factura (define el premio)
+            $suc = tg_str($b['sucursal'] ?? '', 120);
+            if ($suc !== '' && !in_array($suc, TG_SUCURSALES, true)) throw new InvalidArgumentException('Sucursal inválida.');
+            $q = $db->prepare('SELECT sucursal FROM tg_entries WHERE id = ?');
+            $q->execute([$id]);
+            $prev = $q->fetchColumn();
+            if ($prev === false) throw new InvalidArgumentException('Participación no encontrada.');
+            if ($suc === '') $suc = (string)$prev;
+            $db->prepare('UPDATE tg_entries SET estado = ?, motivo = ?, nro_factura = ?, sucursal = ?, reviewed_at = NOW(), reviewed_by = ? WHERE id = ?')
+               ->execute([$estado, $motivo, $nro, $suc, tg_user(), $id]);
+            tg_log('review', ['id' => $id, 'estado' => $estado, 'motivo' => $motivo, 'nro_factura' => $nro] + ($suc !== $prev ? ['sucursal' => $suc, 'sucursal_antes' => $prev] : []));
             tg_json(['ok' => true]);
         }
 
         case 'draw.seal': {
             if (tg_draw_row()['sealed_at']) throw new InvalidArgumentException('La lista ya está cerrada.');
-            $snap = array_map(function ($r) { return [(int)$r['id'], (string)$r['ci']]; },
-                $db->query("SELECT id, ci FROM tg_entries WHERE estado = 'aprobada' ORDER BY id")->fetchAll());
+            // [id, cédula, sucursal]: la sucursal queda congelada con la lista (define el premio por el que participa)
+            $snap = array_map(function ($r) { return [(int)$r['id'], (string)$r['ci'], (string)$r['sucursal']]; },
+                $db->query("SELECT id, ci, sucursal FROM tg_entries WHERE estado = 'aprobada' ORDER BY id")->fetchAll());
             if (!$snap) throw new InvalidArgumentException('No hay participaciones aprobadas.');
             $hash = tg_list_hash($snap);
             $db->prepare('REPLACE INTO tg_draw (id, sealed_at, sealed_by, total, hash, snapshot) VALUES (1, NOW(), ?, ?, ?, ?)')
@@ -289,6 +308,7 @@ try {
             $prizeId = (string)(tg_body()['prize_id'] ?? '');
             $prize = tg_prize($prizeId);
             if (!$prize) throw new InvalidArgumentException('Premio inválido.');
+            if ($prize['sucursal'] === '') throw new InvalidArgumentException('Este premio todavía no tiene sucursal asignada.');
             $d = tg_draw_row();
             if (!$d['sealed_at']) throw new InvalidArgumentException('Primero cerrá la lista de participantes.');
 
@@ -298,10 +318,10 @@ try {
             $rol = TG_ROLES[(int)$done->fetchColumn()] ?? null;
             if (!$rol) { $db->rollBack(); throw new InvalidArgumentException('Este premio ya tiene ganador y suplente.'); }
 
-            // 1 premio por persona: quien ya salió (ganador o suplente) no vuelve a participar
-            $drawn = array_flip($db->query('SELECT DISTINCT ci FROM tg_results')->fetchAll(PDO::FETCH_COLUMN));
-            $pool = array_values(array_filter(json_decode((string)$d['snapshot'], true) ?: [], function ($r) use ($drawn) { return !isset($drawn[$r[1]]); }));
-            if (!$pool) { $db->rollBack(); throw new InvalidArgumentException('No quedan participantes habilitados.'); }
+            // Solo cupones de la sucursal del premio. 1 premio por persona: quien ya salió (ganador o suplente) no vuelve a participar
+            $drawn = $db->query('SELECT DISTINCT ci FROM tg_results')->fetchAll(PDO::FETCH_COLUMN);
+            $pool = tg_prize_pool(json_decode((string)$d['snapshot'], true) ?: [], $drawn, $prize['sucursal']);
+            if (!$pool) { $db->rollBack(); throw new InvalidArgumentException('No quedan cupones habilitados en la sucursal de este premio.'); }
 
             $pick = $pool[random_int(0, count($pool) - 1)]; // azar criptográficamente seguro
             $db->prepare('INSERT INTO tg_results (prize_id, rol, entry_id, ci, pool, created_by) VALUES (?,?,?,?,?,?)')

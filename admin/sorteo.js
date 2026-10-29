@@ -1,7 +1,7 @@
 /* Sorteo en vivo — ruleta + tómbola de nombres.
    El ganador lo elige el servidor (azar criptográfico) apenas se toca GIRAR; la animación solo lo muestra. */
 (function () {
-  const { api, esc, $, toast, boot, bindCommon, fmtDate } = window.TG;
+  const { api, esc, $, toast, fmtDate } = window.TG;
   const IMG = {
     "cuadriciclo": "../assets/img/premios/cuadriciclo-au200.jpg",
     "moto-gris": "../assets/img/premios/moto-cf125-gris.jpg",
@@ -15,9 +15,10 @@
 
   let draw = null, selected = null, spinning = false, sound = true, rotation = 0;
 
-  bindCommon();
   buildWheel();
-  boot(refresh);
+  // el panel (admin.js) llama a TG_SORTEO.show() al abrir la pestaña "Sorteo"
+  window.TG_SORTEO = { show: refresh };
+  const visible = () => !$("#viewSorteo").hidden;
 
   /* ---------- Estado ---------- */
   async function refresh() {
@@ -35,16 +36,18 @@
     $("#sbPending").textContent = draw.pending.toLocaleString("es-PY");
     $("#btnSeal").disabled = draw.approved === 0;
     $("#seal").innerHTML = draw.sealed
-      ? `<strong>${draw.total.toLocaleString("es-PY")}</strong> participaciones · lista cerrada el ${esc(fmtDate(draw.sealed_at))}<br>Huella SHA-256: <code title="${esc(draw.hash)}">${esc(draw.hash.slice(0, 16))}…${esc(draw.hash.slice(-8))}</code>`
+      ? `<strong>${draw.total.toLocaleString("es-PY")}</strong> cupones · lista cerrada el ${esc(fmtDate(draw.sealed_at))}<br>Huella SHA-256: <code title="${esc(draw.hash)}">${esc(draw.hash.slice(0, 16))}…${esc(draw.hash.slice(-8))}</code>`
       : "";
   }
 
   function renderPrizes() {
     $("#prizes").innerHTML = draw.prizes.map((p) => {
-      const done = !p.next;
-      return `<button class="pz__item ${selected === p.id ? "is-active" : ""}" data-id="${p.id}" ${done ? "disabled" : ""}>
+      const done = !p.next, noSuc = !p.sucursal;
+      const suc = noSuc ? `<span class="pz__suc pz__suc--none">Sin sucursal asignada</span>`
+        : `<span class="pz__suc">📍 ${esc(p.sucursal.split(" — ")[0])} · ${p.eligible.toLocaleString("es-PY")} cupones</span>`;
+      return `<button class="pz__item ${selected === p.id ? "is-active" : ""}" data-id="${p.id}" ${done || noSuc ? "disabled" : ""}>
         <img class="pz__img" src="${IMG[p.id] || ""}" alt="">
-        <span><span class="pz__t">${esc(p.titulo)}</span><br><span class="pz__d">${esc(p.detalle)}</span>${done ? `<br><span class="pz__done">✓ Sorteado</span>` : ""}</span>
+        <span><span class="pz__t">${esc(p.titulo)}</span><br><span class="pz__d">${esc(p.detalle)}</span><br>${suc}${done ? `<br><span class="pz__done">✓ Sorteado</span>` : ""}</span>
         <span class="pz__res">${p.results.map((r) => `<div class="${r.rol === "ganador" ? "" : "s"}"><b>${r.rol === "ganador" ? "Ganador" : r.rol === "suplente1" ? "Suplente" : "Suplente 2"}</b><span>${esc(r.nombre)} · ${esc(r.ci_mask)}</span></div>`).join("")}</span>
       </button>`;
     }).join("");
@@ -54,11 +57,13 @@
     const p = draw.prizes.find((x) => x.id === selected);
     if (p && !p.next) selected = null;
     const cur = draw.prizes.find((x) => x.id === selected);
-    $("#spinPrize").innerHTML = cur ? `<strong>${esc(cur.titulo)}</strong> · ${esc(cur.detalle)}` : (draw.prizes.every((x) => !x.next) ? "¡Sorteo finalizado!" : "Elegí un premio");
+    $("#spinPrize").innerHTML = cur ? `<strong>${esc(cur.titulo)}</strong> · ${esc(cur.detalle)}<br><span class="spin__suc">Sucursal ${esc(cur.sucursal.split(" — ")[0])}</span>` : (draw.prizes.every((x) => !x.next) ? "¡Sorteo finalizado!" : "Elegí un premio");
     const btn = $("#btnSpin");
-    btn.disabled = !cur || !draw.sealed || spinning || draw.eligible === 0;
+    btn.disabled = !cur || !draw.sealed || spinning || !cur.eligible;
     btn.textContent = cur ? ROL_BTN[cur.next] : "GIRAR";
-    $("#spinPool").textContent = draw.sealed ? `${draw.eligible.toLocaleString("es-PY")} participaciones habilitadas` : "";
+    $("#spinPool").textContent = !draw.sealed ? "" : cur
+      ? (cur.eligible ? `${cur.eligible.toLocaleString("es-PY")} cupones habilitados de esta sucursal` : "No quedan cupones habilitados en esta sucursal")
+      : `${draw.eligible.toLocaleString("es-PY")} cupones habilitados en total`;
   }
 
   $("#prizes").addEventListener("click", (e) => {
@@ -123,6 +128,7 @@
   /* ---------- Giro ---------- */
   $("#btnSpin").addEventListener("click", spin);
   document.addEventListener("keydown", (e) => {
+    if (!visible()) return;
     if (e.code === "Space" && !$("#btnSpin").disabled && $("#reveal").hidden && document.activeElement.tagName !== "INPUT") { e.preventDefault(); spin(); }
     if (e.key.toLowerCase() === "p" && document.activeElement.tagName !== "INPUT") document.body.classList.toggle("is-presenting");
   });

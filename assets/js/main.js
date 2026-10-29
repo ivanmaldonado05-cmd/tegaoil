@@ -72,7 +72,8 @@
       <div class="prize__body">
         <span class="prize__rank">${esc(p.etiqueta)}</span>
         <h3>${P(p.titulo, "premio")}</h3>
-        <p>${P(p.detalle, "características")}</p>
+        <p>${P(p.detalle, "características")}</p>${p.sucursal ? `
+        <p class="prize__where">Se sortea entre las compras de <strong>${esc(p.sucursal)}</strong></p>` : ""}
       </div>
     </article>`).join("");
 
@@ -94,13 +95,15 @@
     </div>`).join("");
 
   // ---------- Sucursales ----------
+  const prizeOf = (nombre) => { const p = C.premios.find((x) => x.sucursal === nombre); return p ? `${p.titulo} · ${p.detalle.split(" · ")[0]}` : ""; };
   const mapUrl = (s) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`Tega Oil ${s.direccion}, ${s.nombre}, Paraguay`)}`;
   $("#branches").innerHTML = C.sucursales.map((s, i) => `
     <a class="branch" href="${s.mapa ? esc(s.mapa) : mapUrl(s)}" target="_blank" rel="noopener">
       <span class="branch__n">${String(i + 1).padStart(2, "0")}</span>
       <span class="branch__body">
         <strong>${esc(s.nombre)}</strong>
-        <span>${esc(s.direccion)}</span>
+        <span>${esc(s.direccion)}</span>${prizeOf(s.nombre) ? `
+        <em class="branch__prize">Premio: ${esc(prizeOf(s.nombre))}</em>` : ""}
       </span>
       <span class="branch__go" aria-hidden="true">↗</span>
     </a>`).join("");
@@ -170,6 +173,7 @@
 
   const faq = [
     ["¿Cuánto tengo que comprar para participar?", `Desde ${esc(C.montoMinimo)} en cualquier producto de las estaciones Tega Oil: combustible, lubricantes o tienda, con factura física.`],
+    ["¿Por qué premio participo?", "Por el premio de la sucursal donde hiciste la compra: cada estación sortea su propio premio entre las facturas registradas de esa sucursal. Por eso es importante elegir bien la sucursal al registrar tu factura."],
     ["¿Cuántas veces puedo participar?", "Podés registrar una factura por día con tu cédula. Cada factura de Gs. 100.000 o más, registrada y aprobada, es un cupón más para el sorteo."],
     ["¿Cómo registro mi factura?", "En la sección “Registrá tu factura” de esta página: completás tus datos, sacás una foto clara de la factura y listo. Al terminar recibís tu número de cupón."],
     ["¿Cómo sé si mi factura fue aprobada?", "Nuestro equipo revisa cada factura. Podés ver el estado en “Consultar mis participaciones”, con tu cédula y el teléfono que registraste."],

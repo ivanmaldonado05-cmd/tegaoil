@@ -1,17 +1,34 @@
-/* Panel — revisión de participaciones */
+/* Panel — participaciones (revisión) + sorteo, en una sola página con dos pestañas */
 (function () {
   const { api, url, esc, $, toast, boot, bindCommon, fmtDate, fmtCi } = window.TG;
   const LABEL = { pendiente: "Pendiente", aprobada: "Aprobada", rechazada: "Rechazada" };
   const state = { estado: "pendiente", q: "", page: 1, rows: [], idx: -1, total: 0, per: 50, locked: false };
 
+  let sucursales = [];
   bindCommon();
-  boot(() => load());
+  boot(() => { window.addEventListener("hashchange", route); route(); });
+
+  // ---------- Pestañas: #participaciones / #sorteo ----------
+  function route() {
+    const sorteo = location.hash === "#sorteo";
+    $("#viewList").hidden = sorteo;
+    $("#viewSorteo").hidden = !sorteo;
+    document.querySelectorAll(".top__nav [data-view]").forEach((a) => a.classList.toggle("is-active", (a.dataset.view === "sorteo") === sorteo));
+    if (sorteo) window.TG_SORTEO.show();
+    else { document.body.classList.remove("is-presenting"); load(); }
+  }
 
   // ---------- Lista ----------
   async function load(keepIdx) {
     try {
       const d = await api("entries", { params: { estado: state.estado, q: state.q, page: state.page } });
       state.rows = d.entries; state.total = d.total; state.per = d.per;
+      sucursales = d.sucursales || sucursales;
+      $("#bySuc").innerHTML = (d.por_sucursal || []).map((x) => `
+        <div class="bysuc__item">
+          <span class="bysuc__n">${x.aprobadas.toLocaleString("es-PY")}</span>
+          <span class="bysuc__t"><strong>${esc(x.sucursal.split(" — ")[0])}</strong><br><small>${x.premio ? esc(x.premio) : "Premio sin asignar"}</small></span>
+        </div>`).join("");
       for (const k in d.counts) document.querySelectorAll(`[data-k="${k}"]`).forEach((n) => (n.textContent = d.counts[k].toLocaleString("es-PY")));
       const reg = d.registro;
       const b = $("#banner");
@@ -96,6 +113,7 @@
     ].map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("");
     $("#mFlags").innerHTML = flags(r, false);
     $("#mNro").value = r.nro_factura || "";
+    $("#mSuc").innerHTML = sucursales.map((x) => `<option ${x === r.sucursal ? "selected" : ""}>${esc(x)}</option>`).join("");
     $("#mReject").hidden = true;
     $("#mMotivoSel").value = "";
     $("#mMotivo").value = ""; $("#mMotivo").hidden = true;
@@ -117,7 +135,7 @@
     }
     state.locked = true;
     try {
-      await api("review", { method: "POST", body: { id: r.id, estado, motivo, nro_factura: $("#mNro").value.trim() } });
+      await api("review", { method: "POST", body: { id: r.id, estado, motivo, nro_factura: $("#mNro").value.trim(), sucursal: $("#mSuc").value } });
       toast(estado === "aprobada" ? `✓ ${r.numero} aprobada` : estado === "rechazada" ? `✕ ${r.numero} rechazada` : `${r.numero} vuelve a pendiente`);
       const wasIdx = state.idx;
       const autoNext = $("#mAutoNext").checked;
@@ -160,7 +178,7 @@
     try { d = JSON.parse(r.detail); } catch { return { label: r.action, cls: "", text: r.detail }; }
     const num = (id) => "#" + String(id).padStart(6, "0");
     switch (r.action) {
-      case "review": return { label: d.estado === "aprobada" ? "Aprobó" : d.estado === "rechazada" ? "Rechazó" : "Volvió a pendiente", cls: d.estado, text: `${num(d.id)}${d.motivo ? " — " + d.motivo : ""}${d.nro_factura ? " · factura " + d.nro_factura : ""}` };
+      case "review": return { label: d.estado === "aprobada" ? "Aprobó" : d.estado === "rechazada" ? "Rechazó" : "Volvió a pendiente", cls: d.estado, text: `${num(d.id)}${d.motivo ? " — " + d.motivo : ""}${d.nro_factura ? " · factura " + d.nro_factura : ""}${d.sucursal ? " · sucursal corregida a " + d.sucursal.split(" — ")[0] : ""}` };
       case "test.wipe": return { label: "Borró los datos de prueba", cls: "reset", text: "" };
       case "draw.seal": return { label: "Cerró la lista", cls: "sorteo", text: `${d.total} participaciones · huella ${String(d.hash).slice(0, 16)}…` };
       case "draw.spin": return { label: "Giro", cls: "sorteo", text: `${d.prize} · ${ROL[d.rol] || d.rol} · ${num(d.entry)} (entre ${d.pool})` };

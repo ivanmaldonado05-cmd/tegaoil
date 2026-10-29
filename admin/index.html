@@ -4,14 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Panel — Sorteo Tega Oil</title>
+  <title>Panel — Vevil Premia tu Preferencia</title>
   <link rel="icon" href="../assets/img/tega-iso.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="admin.css?v=202610291429">
+  <link rel="stylesheet" href="admin.css?v=202610291449">
+  <link rel="stylesheet" href="sorteo.css?v=202610291449">
 </head>
-<body>
+<body class="draw-page">
 
   <!-- LOGIN -->
   <section class="login" id="login" hidden>
@@ -28,29 +29,32 @@
 
   <!-- APP -->
   <div class="app" id="app" hidden>
-    <header class="top">
+    <header class="top ctrl">
       <div class="top__brand">
         <img src="../assets/img/tega-logo.svg" alt="Tega Oil">
         <span>Panel del sorteo</span>
       </div>
       <nav class="top__nav">
-        <a href="index.html" class="is-active">Participaciones</a>
-        <a href="sorteo.html">Sorteo en vivo</a>
+        <a href="#participaciones" data-view="list">Participaciones</a>
+        <a href="#sorteo" data-view="sorteo">Sorteo</a>
         <button type="button" class="linkbtn" id="btnLog">Historial</button>
         <button type="button" class="linkbtn" id="btnPass">Contraseña</button>
         <button type="button" class="linkbtn" id="btnLogout">Salir</button>
       </nav>
     </header>
 
-    <main class="wrap">
+    <!-- ============ VISTA: PARTICIPACIONES ============ -->
+    <main class="wrap" id="viewList">
       <div class="banner" id="banner" hidden></div>
 
       <section class="stats" id="stats">
         <button class="stat" data-estado="pendiente"><span class="stat__n" data-k="pendiente">—</span><span class="stat__l">Pendientes de revisar</span></button>
-        <button class="stat stat--ok" data-estado="aprobada"><span class="stat__n" data-k="aprobada">—</span><span class="stat__l">Aprobadas (participaciones)</span></button>
+        <button class="stat stat--ok" data-estado="aprobada"><span class="stat__n" data-k="aprobada">—</span><span class="stat__l">Aprobadas (cupones)</span></button>
         <button class="stat stat--bad" data-estado="rechazada"><span class="stat__n" data-k="rechazada">—</span><span class="stat__l">Rechazadas</span></button>
         <div class="stat stat--people"><span class="stat__n" data-k="personas">—</span><span class="stat__l">Personas participando</span></div>
       </section>
+
+      <section class="bysuc" id="bySuc"></section>
 
       <section class="toolbar">
         <div class="tabs" id="tabs" role="tablist">
@@ -60,7 +64,7 @@
           <button data-estado="">Todas</button>
         </div>
         <form class="search" id="search">
-          <input name="q" type="search" placeholder="Buscar por nombre, cédula, teléfono, N° de participación o de factura">
+          <input name="q" type="search" placeholder="Buscar por nombre, cédula, teléfono, N° de cupón o de factura">
         </form>
         <a class="btn btn--ghost" id="btnExport" href="#">Exportar a Excel</a>
       </section>
@@ -76,6 +80,82 @@
         <div class="pager" id="pager"></div>
       </section>
     </main>
+
+    <!-- ============ VISTA: SORTEO ============ -->
+    <div class="stage" id="viewSorteo" hidden>
+      <div class="drawbar ctrl">
+        <span class="muted">Sorteo con bolillero electrónico · el público lo ve en <a href="../en-vivo.html" target="_blank" rel="noopener">veviltegaoil.com/en-vivo.html</a></span>
+        <span class="drawbar__btns">
+          <a class="linkbtn" href="acta.html" target="_blank" rel="noopener">📄 Acta</a>
+          <button class="linkbtn" id="btnSound" type="button">🔊 Sonido</button>
+          <button class="linkbtn" id="btnFull" type="button">⛶ Pantalla completa</button>
+          <button class="linkbtn" id="btnReset" type="button">Reiniciar (ensayo)</button>
+        </span>
+      </div>
+
+      <div class="show">
+        <div class="show__head">
+          <div class="show__brands">
+            <img src="../assets/img/tega-logo-white.svg" alt="Tega Oil">
+            <span>×</span>
+            <img src="../assets/img/vevil-logo.png?v=202610291449" alt="Vevil">
+          </div>
+          <h1 class="show__title">Vevil <span>Premia tu Preferencia</span></h1>
+          <div class="seal" id="seal"></div>
+        </div>
+
+        <div class="show__main">
+          <div class="wheel-area">
+            <div class="wheel" id="wheelWrap">
+              <div class="wheel__pointer" aria-hidden="true"></div>
+              <svg class="wheel__svg" id="wheel" viewBox="-110 -110 220 220" aria-hidden="true"></svg>
+              <div class="reel" id="reel" aria-live="polite">
+                <div class="reel__strip" id="reelStrip"><div class="reel__item">¿Quién gana?</div></div>
+              </div>
+            </div>
+            <div class="spin">
+              <p class="spin__prize" id="spinPrize">Elegí un premio</p>
+              <button class="btn btn--spin" id="btnSpin" disabled>GIRAR</button>
+              <p class="spin__pool" id="spinPool"></p>
+            </div>
+          </div>
+
+          <aside class="prizes-panel">
+            <h2>Premios · cada uno se sortea entre los cupones de su sucursal</h2>
+            <div class="pz" id="prizes"></div>
+          </aside>
+        </div>
+      </div>
+
+      <!-- Cierre de lista -->
+      <div class="sealbox" id="sealBox" hidden>
+        <div class="sealbox__card">
+          <p class="kicker">Paso 1</p>
+          <h2>Cerrar la lista de participantes</h2>
+          <p class="muted">Se toma una foto de todos los cupones <strong>aprobados</strong> (con su sucursal) y se calcula su huella digital. Después del cierre no se pueden agregar ni modificar participaciones, y el registro público queda cerrado.</p>
+          <div class="sealbox__nums">
+            <div><span id="sbApproved">0</span>cupones aprobados</div>
+            <div class="warn"><span id="sbPending">0</span>pendientes de revisar (no participan)</div>
+          </div>
+          <p class="error" id="sealError" hidden></p>
+          <button class="btn btn--primary" id="btnSeal">Cerrar lista y calcular huella</button>
+          <a class="linkbtn" href="#participaciones">← Volver a participaciones</a>
+        </div>
+      </div>
+
+      <!-- Revelación del ganador -->
+      <div class="reveal-box" id="reveal" hidden>
+        <canvas class="confetti" id="confetti"></canvas>
+        <div class="reveal-card">
+          <p class="reveal-card__rol" id="rvRol">¡Ganador!</p>
+          <img class="reveal-card__img" id="rvImg" alt="">
+          <p class="reveal-card__prize" id="rvPrize"></p>
+          <h2 class="reveal-card__name" id="rvName"></h2>
+          <p class="reveal-card__meta" id="rvMeta"></p>
+          <button class="btn btn--primary" id="rvClose">Continuar</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- REVISIÓN -->
@@ -94,6 +174,9 @@
           <dl class="dl" id="mData"></dl>
           <div class="flags" id="mFlags"></div>
 
+          <label class="field"><span>Sucursal de la compra <small>(verificá que coincida con la factura: define por qué premio participa)</small></span>
+            <select id="mSuc"></select>
+          </label>
           <label class="field"><span>N° de factura <small>(opcional, ayuda a detectar facturas repetidas)</small></span><input id="mNro" maxlength="40" placeholder="Ej. 001-002-0012345"></label>
 
           <div class="reject" id="mReject" hidden>
@@ -127,6 +210,19 @@
     </div>
   </div>
 
+  <!-- REINICIAR SORTEO -->
+  <div class="modal" id="resetModal" hidden>
+    <div class="modal__backdrop" data-close></div>
+    <form class="modal__card modal__card--sm" id="resetForm">
+      <button type="button" class="modal__x" data-close aria-label="Cerrar">×</button>
+      <h2>Reiniciar sorteo</h2>
+      <p class="muted">Solo para el <strong>sorteo de ensayo</strong>. Borra todos los resultados y reabre la lista (queda registrado en el historial). Escribí <strong>REINICIAR</strong> para confirmar.</p>
+      <input name="confirm" autocomplete="off" placeholder="REINICIAR">
+      <p class="error" id="resetError" hidden></p>
+      <button class="btn btn--bad" type="submit">Reiniciar</button>
+    </form>
+  </div>
+
   <!-- CONTRASEÑA -->
   <div class="modal" id="passModal" hidden>
     <div class="modal__backdrop" data-close></div>
@@ -146,14 +242,15 @@
     <div class="modal__card modal__card--log">
       <button type="button" class="modal__x" data-close aria-label="Cerrar">×</button>
       <h2>Historial de acciones</h2>
-      <p class="muted">Aprobaciones, rechazos, cierre de lista, giros del sorteo y reinicios. Últimas 300 acciones.</p>
+      <p class="muted">Aprobaciones, rechazos, cambios de sucursal, cierre de lista, giros del sorteo y reinicios. Últimas 300 acciones.</p>
       <div class="log" id="logList"></div>
     </div>
   </div>
 
   <div class="toast" id="toast" hidden></div>
 
-  <script src="common.js?v=202610291429"></script>
-  <script src="admin.js?v=202610291429"></script>
+  <script src="common.js?v=202610291449"></script>
+  <script src="sorteo.js?v=202610291449"></script>
+  <script src="admin.js?v=202610291449"></script>
 </body>
 </html>

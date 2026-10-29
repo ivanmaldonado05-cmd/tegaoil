@@ -116,3 +116,10 @@
   .seal { justify-self: center; text-align: center; }
   .wheel { width: min(88vw, 520px); }
 }
+
+/* Premio por sucursal */
+.pz__suc { display: inline-block; margin-top: 3px; font-size: .78rem; font-weight: 700; color: var(--green-2); }
+.pz__suc--none { color: var(--amber); }
+.spin__suc { font-size: .9rem; color: var(--green-2); font-weight: 700; }
+#viewSorteo.stage { min-height: calc(100vh - 62px); }
+.is-presenting #viewSorteo.stage { min-height: 100vh; }

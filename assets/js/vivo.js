@@ -18,7 +18,7 @@
 
   let known = null;      // claves de resultados ya mostrados
   const pending = new Set(); // resultados que todavía no se revelaron (no se muestran en la lista)
-  let queue = [], busy = false, sound = false, rotation = 0, lastReel = [], state = null, fails = 0;
+  let queue = [], busy = false, sound = false, rotation = 0, reels = {}, state = null, fails = 0;
 
   buildWheel();
   document.addEventListener("visibilitychange", () => { if (!document.hidden) next(); });
@@ -33,7 +33,8 @@
       if (!d.ok) throw new Error(d.error);
       fails = 0;
       state = d.draw;
-      if (d.reel?.length) lastReel = d.reel;
+      // nombres de la tómbola por premio (solo cupones de su sucursal)
+      state.prizes.forEach((p) => { if (p.reel?.length) reels[p.id] = p.reel; });
       const all = [];
       state.prizes.forEach((p) => p.results.forEach((x) => all.push({ ...x, prize: p, key: p.id + ":" + x.rol })));
       if (known === null) {
@@ -96,7 +97,7 @@
     $("#prizes").innerHTML = state.prizes.map((p) => ({ ...p, results: p.results.filter((r) => !pending.has(p.id + ":" + r.rol)) })).map((p) => `
       <div class="pz__item">
         <img class="pz__img" src="${IMG[p.id] || ""}" alt="">
-        <span><span class="pz__t">${esc(p.titulo)}</span><br><span class="pz__d">${esc(p.detalle)}</span></span>
+        <span><span class="pz__t">${esc(p.titulo)}</span><br><span class="pz__d">${esc(p.detalle)}</span>${p.sucursal ? `<br><span class="pz__suc">📍 Sucursal ${esc(p.sucursal)}</span>` : ""}</span>
         <span class="pz__res">${p.results.length
           ? p.results.map((r) => `<div class="${r.rol === "ganador" ? "" : "s"}"><b>${ROL_S[r.rol]}</b><span>${esc(r.nombre)} · ${esc(r.ci_mask)}</span></div>`).join("")
           : `<span class="pz__empty">Por sortear</span>`}</span>
@@ -114,14 +115,14 @@
     }
     busy = true;
     const r = queue.shift();
-    $("#status").innerHTML = `Sorteando: <strong>${esc(r.prize.titulo)}</strong> · ${esc(r.prize.detalle)}`;
+    $("#status").innerHTML = `Sorteando: <strong>${esc(r.prize.titulo)}</strong> · ${esc(r.prize.detalle)}${r.prize.sucursal ? `<br><span style="font-size:.85em;color:var(--green-2)">Entre los cupones de la sucursal ${esc(r.prize.sucursal)}</span>` : ""}`;
     $("#sub").textContent = r.rol === "ganador" ? "Ganador" : "Suplente";
     const short = shortName(r.nombre);
     const wheel = $("#wheel"), from = rotation;
     rotation += 360 * 8 + Math.floor(Math.random() * 360);
     wheel.animate([{ transform: `rotate(${from}deg)` }, { transform: `rotate(${rotation}deg)` }], { duration: DURATION + 500, easing: "cubic-bezier(.15,.55,.12,1)", fill: "forwards" });
     $("#reel").classList.remove("is-done");
-    await runReel(lastReel, short);
+    await runReel(reels[r.prize.id] || [], short);
     $("#reel").classList.add("is-done");
     await wait(600);
     reveal(r);

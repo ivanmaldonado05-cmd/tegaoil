@@ -124,3 +124,10 @@
   .form__grid { grid-template-columns: 1fr; }
   .mine__form { grid-template-columns: 1fr; }
 }
+
+/* Premio por sucursal */
+.field__hint { font-size: .85rem; color: var(--muted); }
+.field__hint strong { color: var(--green-2); }
+.prize__where { margin-top: 10px !important; font-size: .9rem; color: var(--muted); }
+.prize__where strong { color: var(--green-2); }
+.branch__prize { display: block; margin-top: 4px; font-style: normal; font-weight: 700; font-size: .85rem; color: var(--green-2); }

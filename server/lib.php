@@ -15,17 +15,6 @@ if (!is_file(__DIR__ . '/config.php')) {
 
 const TG_DATA_DIR = __DIR__ . '/data/facturas';
 
-// Premios (deben coincidir con assets/js/config.js). El orden del sorteo se elige en la pantalla del sorteo.
-const TG_PRIZES = [
-    ['id' => 'cuadriciclo',   'titulo' => 'Cuadriciclo AU200', 'detalle' => 'Color blanco / naranja · Año 2026'],
-    ['id' => 'moto-gris',     'titulo' => 'Moto CF 125',       'detalle' => 'Color gris · Año 2025'],
-    ['id' => 'moto-blanca-1', 'titulo' => 'Moto CF 125',       'detalle' => 'Color blanco · Año 2025'],
-    ['id' => 'moto-blanca-2', 'titulo' => 'Moto CF 125',       'detalle' => 'Color blanco · Año 2025'],
-    ['id' => 'moto-negra',    'titulo' => 'Moto CF 125',       'detalle' => 'Color negro · Año 2025'],
-];
-// Bases: un ganador y un suplente por premio
-const TG_ROLES = ['ganador', 'suplente1'];
-
 const TG_SUCURSALES = [
     'San Lorenzo — Avda. Manuel Ortiz Guerrero esq. Puerto Rosario',
     'Barcequillo — Avda. Pratt Gill esq. Capitolio',
@@ -33,6 +22,18 @@ const TG_SUCURSALES = [
     'Ypacaraí — Iturbe esq. Paraguay',
     'Coronel Oviedo — Dr. Blas Garay esq. Las Residentas',
 ];
+
+// Premios: cada uno se sortea SOLO entre los cupones de su sucursal ('sucursal' = texto exacto de TG_SUCURSALES).
+// Sucursal vacía = premio todavía sin asignar (no se puede sortear). Mantener igual en assets/js/config.js.
+const TG_PRIZES = [
+    ['id' => 'cuadriciclo',   'titulo' => 'Cuadriciclo AU200', 'detalle' => 'Color blanco / naranja · Año 2026', 'sucursal' => 'Tramo Luque – San Bernardino — Calle Vergel Luqueño'],
+    ['id' => 'moto-gris',     'titulo' => 'Moto CF 125',       'detalle' => 'Color gris · Año 2025',             'sucursal' => 'San Lorenzo — Avda. Manuel Ortiz Guerrero esq. Puerto Rosario'],
+    ['id' => 'moto-blanca-1', 'titulo' => 'Moto CF 125',       'detalle' => 'Color blanco · Año 2025',           'sucursal' => 'Coronel Oviedo — Dr. Blas Garay esq. Las Residentas'],
+    ['id' => 'moto-blanca-2', 'titulo' => 'Moto CF 125',       'detalle' => 'Color blanco · Año 2025',           'sucursal' => ''],
+    ['id' => 'moto-negra',    'titulo' => 'Moto CF 125',       'detalle' => 'Color negro · Año 2025',            'sucursal' => ''],
+];
+// Bases: un ganador y un suplente por premio. Un premio por persona.
+const TG_ROLES = ['ganador', 'suplente1'];
 
 function tg_config(): array
 {
@@ -220,10 +221,21 @@ function tg_draw_row(): array
     return $row ?: ['sealed_at' => null, 'total' => 0, 'hash' => '', 'snapshot' => '[]', 'sealed_by' => ''];
 }
 
-/** Huella de la lista: SHA-256 de "id|ci" por línea, ordenado por id. */
+/** Huella de la lista: SHA-256 de "id|cédula|sucursal" por línea, ordenado por id
+ *  (la sucursal define por qué premio participa cada cupón). */
 function tg_list_hash(array $snapshot): string
 {
-    return hash('sha256', implode("\n", array_map(function ($r) { return $r[0] . '|' . $r[1]; }, $snapshot)));
+    return hash('sha256', implode("\n", array_map(function ($r) { return $r[0] . '|' . $r[1] . '|' . ($r[2] ?? ''); }, $snapshot)));
+}
+
+/** Cupones habilitados para un premio: de su sucursal y de personas que todavía no salieron sorteadas. */
+function tg_prize_pool(array $snapshot, array $drawnCi, string $sucursal): array
+{
+    if ($sucursal === '') return [];
+    $drawn = array_flip($drawnCi);
+    return array_values(array_filter($snapshot, function ($r) use ($drawn, $sucursal) {
+        return ($r[2] ?? '') === $sucursal && !isset($drawn[$r[1]]);
+    }));
 }
 
 function tg_draw_state(): array
@@ -240,18 +252,24 @@ function tg_draw_state(): array
             'sucursal' => $r['sucursal'], 'pool' => (int)$r['pool'], 'at' => $r['created_at'],
         ];
     }
-    $prizes = array_map(function ($p) use ($byPrize) {
+    $snap = json_decode((string)$d['snapshot'], true) ?: [];
+    $drawn = $db->query('SELECT DISTINCT ci FROM tg_results')->fetchAll(PDO::FETCH_COLUMN);
+    $approvedBySuc = $db->query("SELECT sucursal, COUNT(*) n FROM tg_entries WHERE estado = 'aprobada' GROUP BY sucursal")->fetchAll(PDO::FETCH_KEY_PAIR);
+    $sealed = (bool)$d['sealed_at'];
+
+    $prizes = array_map(function ($p) use ($byPrize, $snap, $drawn, $approvedBySuc, $sealed) {
         $res = $byPrize[$p['id']] ?? [];
-        return $p + ['results' => $res, 'next' => TG_ROLES[count($res)] ?? null];
+        // antes del cierre: aprobadas de la sucursal; después: cupones habilitados de la lista cerrada
+        $eligible = $sealed ? count(tg_prize_pool($snap, $drawn, $p['sucursal'])) : (int)($approvedBySuc[$p['sucursal']] ?? 0);
+        return $p + ['results' => $res, 'next' => TG_ROLES[count($res)] ?? null, 'eligible' => $p['sucursal'] === '' ? 0 : $eligible];
     }, TG_PRIZES);
 
     $counts = $db->query("SELECT estado, COUNT(*) n FROM tg_entries GROUP BY estado")->fetchAll(PDO::FETCH_KEY_PAIR);
-    $snap = json_decode((string)$d['snapshot'], true) ?: [];
-    $drawn = $db->query('SELECT DISTINCT ci FROM tg_results')->fetchAll(PDO::FETCH_COLUMN);
-    $eligible = $d['sealed_at'] ? count(array_filter($snap, function ($r) use ($drawn) { return !in_array($r[1], $drawn, true); })) : 0;
+    $drawnSet = array_flip($drawn);
+    $eligible = $sealed ? count(array_filter($snap, function ($r) use ($drawnSet) { return !isset($drawnSet[$r[1]]); })) : 0;
 
     return [
-        'sealed' => (bool)$d['sealed_at'], 'sealed_at' => $d['sealed_at'], 'sealed_by' => $d['sealed_by'],
+        'sealed' => $sealed, 'sealed_at' => $d['sealed_at'], 'sealed_by' => $d['sealed_by'],
         'total' => (int)$d['total'], 'hash' => $d['hash'], 'eligible' => $eligible,
         'pending' => (int)($counts['pendiente'] ?? 0), 'approved' => (int)($counts['aprobada'] ?? 0),
         'prizes' => $prizes,
