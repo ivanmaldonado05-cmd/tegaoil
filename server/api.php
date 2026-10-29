@@ -60,8 +60,8 @@ try {
             if ($e->getCode() === '23000') tg_json(['ok' => false, 'code' => 'daily', 'error' => 'Ya registraste una factura hoy con esta cédula. Podés cargar la siguiente mañana.'], 409);
             throw $e;
         }
+        $id = (int)$db->lastInsertId(); // leerlo antes de cualquier otro INSERT
         tg_log_attempt('reg');
-        $id = (int)$db->lastInsertId();
         tg_json(['ok' => true, 'numero' => tg_numero($id), 'nombre' => $nombre]);
     }
 
