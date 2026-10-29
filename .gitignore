@@ -1,0 +1,11 @@
+# Backend: credenciales y datos generados en el hosting
+server/config.php
+server/data/*
+!server/data/.htaccess
+
+# Desarrollo local
+node_modules/
+_dev/data/
+
+.DS_Store
+Thumbs.db

@@ -14,6 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/registro.css">
 </head>
 <body>
 
@@ -33,6 +34,7 @@
         <a href="#sucursales">Sucursales</a>
         <a href="#bases">Bases y condiciones</a>
         <a href="#faq">Preguntas</a>
+        <a href="#registro" class="only-pre nav__cta">Registrá tu factura</a>
       </nav>
     </div>
   </header>
@@ -55,9 +57,10 @@
         <p class="hero__date only-pre" id="heroDate"></p>
 
         <div class="hero__ctas">
-          <a href="#participar" class="btn btn--primary only-pre">Cómo participar</a>
+          <a href="#registro" class="btn btn--primary only-pre">Registrá tu factura</a>
+          <a href="#participar" class="btn btn--ghost only-pre">Cómo participar</a>
           <a href="#ganadores" class="btn btn--primary only-winners">Ver ganadores</a>
-          <a href="#bases" class="btn btn--ghost">Bases y condiciones</a>
+          <a href="#bases" class="btn btn--ghost only-winners">Bases y condiciones</a>
         </div>
       </div>
     </section>
@@ -104,12 +107,12 @@
           <li class="step">
             <span class="step__n">02</span>
             <h3>Pedí tu factura física</h3>
-            <p>Es el único documento válido para participar en el sorteo.</p>
+            <p>Es el documento válido de la promoción. Guardala: la vas a necesitar para retirar tu premio si ganás.</p>
           </li>
           <li class="step">
             <span class="step__n">03</span>
-            <h3>Guardá tu factura</h3>
-            <p id="stepReg">Es tu comprobante de participación y la vas a necesitar para retirar tu premio si ganás.</p>
+            <h3>Registrala en esta web</h3>
+            <p>Subí la foto de tu factura en el formulario de abajo. Podés cargar <strong>1 factura por día</strong>.</p>
           </li>
           <li class="step">
             <span class="step__n">04</span>
@@ -117,7 +120,98 @@
             <p id="stepDraw"></p>
           </li>
         </ol>
-        <p class="note center">Mientras más compras, más chances. Participan solo mayores de 18 años.</p>
+        <p class="note center">Cada factura registrada y aprobada es una chance más. Participan solo mayores de 18 años.</p>
+      </div>
+    </section>
+
+    <!-- REGISTRO -->
+    <section class="section only-pre" id="registro">
+      <div class="container container--narrow">
+        <div class="section__head">
+          <p class="kicker">Registro</p>
+          <h2>Registrá tu factura</h2>
+          <p class="section__sub">Completá tus datos y subí una foto clara de tu factura de Gs. 100.000 o más.</p>
+        </div>
+
+        <div class="reg" id="reg">
+          <div class="reg__status" id="regStatus" hidden></div>
+
+          <form class="form" id="regForm" novalidate>
+            <div class="form__grid">
+              <label class="field">
+                <span>Nombre</span>
+                <input name="nombre" autocomplete="given-name" required maxlength="80">
+              </label>
+              <label class="field">
+                <span>Apellido</span>
+                <input name="apellido" autocomplete="family-name" required maxlength="80">
+              </label>
+              <label class="field">
+                <span>N° de cédula</span>
+                <input name="ci" inputmode="numeric" autocomplete="off" required maxlength="11" placeholder="Ej. 4.301.064">
+              </label>
+              <label class="field">
+                <span>Teléfono (WhatsApp)</span>
+                <input name="telefono" type="tel" inputmode="tel" autocomplete="tel" required maxlength="16" placeholder="Ej. 0981 123 456">
+              </label>
+              <label class="field">
+                <span>Sucursal donde compraste</span>
+                <select name="sucursal" required><option value="">Elegí una sucursal</option></select>
+              </label>
+              <label class="field">
+                <span>Email <small>(opcional)</small></span>
+                <input name="email" type="email" autocomplete="email" maxlength="120">
+              </label>
+            </div>
+
+            <div class="upload" id="upload">
+              <input type="file" name="foto" id="foto" accept="image/*" required>
+              <label for="foto" class="upload__box">
+                <span class="upload__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 9a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm8-3h-3.2l-1.5-2H8.7L7.2 6H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2Zm-8 12a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11Z"/></svg>
+                </span>
+                <strong>Foto de la factura</strong>
+                <small>Tocá para sacar la foto o elegirla de tu galería. Que se lean bien el monto, la fecha y el número.</small>
+              </label>
+              <div class="upload__preview" id="preview" hidden>
+                <img alt="Vista previa de la factura">
+                <button type="button" class="upload__change" id="changePhoto">Cambiar foto</button>
+              </div>
+            </div>
+
+            <div class="checks">
+              <label class="check"><input type="checkbox" name="mayor" value="1" required><span>Soy mayor de 18 años.</span></label>
+              <label class="check"><input type="checkbox" name="bases" value="1" required><span>Leí y acepto las <a href="#bases">bases y condiciones</a>.</span></label>
+              <label class="check"><input type="checkbox" name="datos" value="1" required><span>Autorizo el uso de mis datos únicamente para la gestión de este sorteo.</span></label>
+            </div>
+
+            <!-- campo trampa para bots -->
+            <div class="hp" aria-hidden="true"><label>Sitio web <input name="website" tabindex="-1" autocomplete="off"></label></div>
+
+            <p class="form__error" id="regError" role="alert" hidden></p>
+            <button class="btn btn--primary form__submit" id="regSubmit" type="submit">Registrar factura</button>
+            <p class="form__note">Guardá tu factura física original: el ganador debe presentarla junto con su cédula para retirar el premio.</p>
+          </form>
+
+          <div class="reg__ok" id="regOk" hidden>
+            <div class="reg__check" aria-hidden="true">✓</div>
+            <h3>¡Listo, <span id="okName"></span>!</h3>
+            <p>Tu factura quedó registrada con el número</p>
+            <p class="reg__num" id="okNum"></p>
+            <p class="muted">Nuestro equipo la va a revisar. Guardá este número y tu factura física. Podés registrar otra factura mañana.</p>
+            <button type="button" class="btn btn--ghost" id="regAgain">Volver</button>
+          </div>
+        </div>
+
+        <details class="mine" id="mine">
+          <summary>Consultar mis participaciones</summary>
+          <form class="mine__form" id="mineForm">
+            <input name="ci" inputmode="numeric" placeholder="N° de cédula" required>
+            <input name="telefono" type="tel" inputmode="tel" placeholder="Teléfono registrado" required>
+            <button class="btn btn--ghost" type="submit">Consultar</button>
+          </form>
+          <div class="mine__out" id="mineOut"></div>
+        </details>
       </div>
     </section>
 
@@ -186,5 +280,6 @@
 
   <script src="assets/js/config.js"></script>
   <script src="assets/js/main.js"></script>
+  <script src="assets/js/registro.js"></script>
 </body>
 </html>

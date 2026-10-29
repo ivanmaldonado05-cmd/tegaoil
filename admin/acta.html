@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Acta del sorteo — Vevil Premia tu Preferencia</title>
+  <link rel="icon" href="../assets/img/tega-iso.svg" type="image/svg+xml">
+  <style>
+    :root { --ink: #1b1622; --muted: #6b6475; --line: #ddd6e6; --violet: #6d0bbf; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #efecf3; color: var(--ink); font: 14px/1.5 "Segoe UI", system-ui, Arial, sans-serif; }
+    .bar { position: sticky; top: 0; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; padding: 12px; background: #1b1622; }
+    .bar button, .bar a { border: 0; border-radius: 999px; padding: 10px 18px; font: 700 14px inherit; cursor: pointer; text-decoration: none; background: #9803fb; color: #fff; }
+    .bar .alt { background: #2e2838; }
+    .page { width: min(210mm, 100% - 24px); margin: 20px auto; padding: 18mm 16mm; background: #fff; box-shadow: 0 6px 30px rgba(0,0,0,.12); }
+    header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--violet); padding-bottom: 12px; }
+    header img { height: 34px; }
+    h1 { font-size: 22px; margin: 18px 0 4px; text-transform: uppercase; letter-spacing: .03em; }
+    h2 { font-size: 15px; margin: 22px 0 8px; color: var(--violet); text-transform: uppercase; letter-spacing: .06em; }
+    p { margin: 4px 0; }
+    .muted { color: var(--muted); }
+    .grid { display: grid; grid-template-columns: 170px 1fr; gap: 4px 12px; }
+    .grid dt { color: var(--muted); }
+    .grid dd { margin: 0; font-weight: 600; }
+    code { font: 12px Consolas, monospace; word-break: break-all; background: #f4f0f9; padding: 2px 6px; border-radius: 4px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 12.5px; }
+    th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { background: #f4f0f9; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+    tr.g td { font-weight: 700; }
+    .pending { color: var(--muted); font-style: italic; }
+    .firmas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; margin-top: 60px; }
+    .firmas div { border-top: 1px solid var(--ink); padding-top: 6px; text-align: center; font-size: 12px; }
+    .err { text-align: center; padding: 40px; color: #b0102a; }
+    @media print {
+      body { background: #fff; }
+      .bar { display: none; }
+      .page { box-shadow: none; margin: 0; width: auto; padding: 0; }
+      @page { size: A4; margin: 14mm; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bar">
+    <button onclick="print()">Imprimir / Guardar PDF</button>
+    <button class="alt" id="btnCsv">Descargar resultados (Excel)</button>
+    <a class="alt" href="../server/api.php?action=draw.list">Descargar lista cerrada (Excel)</a>
+  </div>
+  <div class="page" id="page"><p class="muted">Cargando…</p></div>
+
+  <script src="common.js"></script>
+  <script>
+  (async function () {
+    const { api, esc, fmtDate, fmtCi } = window.TG;
+    const ROL = { ganador: "Ganador", suplente1: "Suplente 1", suplente2: "Suplente 2" };
+    let a;
+    try {
+      const s = await api("session");
+      if (!s.auth) { document.getElementById("page").innerHTML = '<p class="err">Ingresá primero al <a href="index.html">panel</a>.</p>'; return; }
+      a = (await api("draw.acta")).acta;
+    } catch (e) { document.getElementById("page").innerHTML = `<p class="err">${esc(e.message)}</p>`; return; }
+
+    const byPrize = {};
+    a.results.forEach((r) => (byPrize[r.prize_id] = byPrize[r.prize_id] || []).push(r));
+    const rows = a.prizes.map((p) => {
+      const rs = byPrize[p.id] || [];
+      return ["ganador", "suplente1", "suplente2"].map((rol) => {
+        const r = rs.find((x) => x.rol === rol);
+        return r
+          ? `<tr class="${rol === "ganador" ? "g" : ""}"><td>${esc(p.titulo)}<br><span class="muted">${esc(p.detalle)}</span></td><td>${ROL[rol]}</td><td>${esc(r.nombre)}</td><td>${esc(fmtCi(r.ci))}</td><td>${esc(r.telefono)}</td><td>${esc(r.numero)}</td><td>${esc(fmtDate(r.at))}<br><span class="muted">${r.pool.toLocaleString("es-PY")} habilitadas</span></td></tr>`
+          : `<tr><td>${esc(p.titulo)}<br><span class="muted">${esc(p.detalle)}</span></td><td>${ROL[rol]}</td><td colspan="5" class="pending">Sin sortear</td></tr>`;
+      }).join("");
+    }).join("");
+
+    document.getElementById("page").innerHTML = `
+      <header><span style="display:flex;align-items:center;gap:10px"><img src="../assets/img/tega-iso.svg" alt=""><strong style="font-size:18px">Tega Oil × Vevil</strong></span><span class="muted">Sorteo oficial</span></header>
+      <h1>Acta del sorteo</h1>
+      <p class="muted">Promoción “Vevil Premia tu Preferencia” — Generada el ${esc(fmtDate(a.generated_at))}</p>
+
+      <h2>Datos de la promoción</h2>
+      <dl class="grid">
+        <dt>Organizador</dt><dd>VEVIL EAS — RUC 80161517-8</dd>
+        <dt>Lugar de la promoción</dt><dd>Estaciones de servicio Tega Oil</dd>
+        <dt>Vigencia</dt><dd>10/11/2026 al 31/03/2027</dd>
+        <dt>Mecánica</dt><dd>Compra desde Gs. 100.000 · factura física · registro online, una carga por cédula por día</dd>
+        <dt>Autoridad</dt><dd>Comisión Nacional de Juegos de Azar (CONAJZAR) — Ley N° 1016/1997</dd>
+      </dl>
+
+      <h2>Lista de participantes</h2>
+      ${a.sealed_at ? `<dl class="grid">
+        <dt>Participaciones</dt><dd>${a.total.toLocaleString("es-PY")} facturas aprobadas</dd>
+        <dt>Lista cerrada</dt><dd>${esc(fmtDate(a.sealed_at))} por ${esc(a.sealed_by)}</dd>
+        <dt>Huella SHA-256</dt><dd><code>${esc(a.hash)}</code></dd>
+      </dl>
+      <p class="muted" style="margin-top:8px">La huella se calcula sobre la lista completa (N° de participación | cédula, en orden). Cualquier cambio en la lista produce una huella distinta. La lista cerrada completa se adjunta en Excel.</p>`
+      : `<p class="pending">La lista todavía no fue cerrada.</p>`}
+
+      <h2>Resultados</h2>
+      <p class="muted">Cada resultado fue elegido por el servidor con un generador de números aleatorios criptográficamente seguro, entre las participaciones habilitadas en ese momento. Un premio por persona: quien ya salió sorteado no vuelve a participar.</p>
+      <table>
+        <thead><tr><th>Premio</th><th>Rol</th><th>Nombre</th><th>Cédula</th><th>Teléfono</th><th>N° part.</th><th>Hora</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+
+      <div class="firmas">
+        <div>Escribano/a público/a</div>
+        <div>Representante del organizador</div>
+        <div>Fiscal CONAJZAR</div>
+      </div>`;
+
+    document.getElementById("btnCsv").addEventListener("click", () => {
+      const q = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+      const lines = [["Premio", "Detalle", "Rol", "Nombre", "Cédula", "Teléfono", "Sucursal", "N° participación", "Fecha y hora", "Participaciones habilitadas"].map(q).join(";")];
+      a.results.forEach((r) => lines.push([r.premio, r.detalle, ROL[r.rol], r.nombre, r.ci, r.telefono, r.sucursal, r.numero, r.at, r.pool].map(q).join(";")));
+      const blob = new Blob(["﻿" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+      const link = Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: "resultados-sorteo.csv" });
+      link.click();
+    });
+  })();
+  </script>
+</body>
+</html>

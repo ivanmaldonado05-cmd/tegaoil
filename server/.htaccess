@@ -1,0 +1,5 @@
+# Bloquea acceso directo a archivos internos del backend
+<FilesMatch "^(config\.php|config\.sample\.php|lib\.php|schema\.sql)$">
+  Require all denied
+</FilesMatch>
+Options -Indexes

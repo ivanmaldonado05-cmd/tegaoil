@@ -77,7 +77,6 @@
     </article>`).join("");
 
   // ---------- Pasos ----------
-  if (C.comoSeRegistra) $("#stepReg").textContent = C.comoSeRegistra;
   $("#stepDraw").innerHTML = `El sorteo es el ${D(C.fechaSorteo, "fecha")} y la lista de ganadores se publica el ${D(C.listaGanadores, "fecha")}.`;
 
   // ---------- Fechas ----------
@@ -143,8 +142,10 @@
 
   const faq = [
     ["¿Cuánto tengo que comprar para participar?", `Desde ${esc(C.montoMinimo)} en cualquier producto de las estaciones Tega Oil: combustible, lubricantes o tienda.`],
-    ["¿Cuántas veces puedo participar?", "Todas las que quieras: cada compra que cumpla con el monto mínimo es una nueva chance de ganar."],
-    ["¿Qué comprobante necesito?", "La factura física de tu compra. Es el único documento válido, así que guardala hasta después del sorteo."],
+    ["¿Cuántas veces puedo participar?", "Podés registrar una factura por día con tu cédula. Cada factura de Gs. 100.000 o más, registrada y aprobada, es una nueva chance de ganar."],
+    ["¿Cómo registro mi factura?", "En la sección “Registrá tu factura” de esta página: completás tus datos, sacás una foto clara de la factura y listo. Al terminar recibís tu número de participación."],
+    ["¿Cómo sé si mi factura fue aprobada?", "Nuestro equipo revisa cada factura. Podés ver el estado en “Consultar mis participaciones”, con tu cédula y el teléfono que registraste."],
+    ["¿Qué comprobante necesito?", "La factura física de tu compra. Registrás una foto en la web, pero guardá la original: si ganás, la tenés que presentar junto con tu cédula."],
     ["¿Cuándo es el sorteo?", `El ${D(C.fechaSorteo, "fecha")}. La lista de ganadores se publica el ${D(C.listaGanadores, "fecha")}.`],
     ["¿Dónde puedo ver los premios?", "Están en exhibición en nuestras sucursales de San Lorenzo, Barcequillo, Tramo Luque – San Bernardino, Ypacaraí y Coronel Oviedo."],
     ["¿Cuánto tiempo tengo para retirar mi premio?", "60 días desde el sorteo, presentando tu cédula y la factura ganadora."]

@@ -30,7 +30,7 @@ window.SORTEO = {
   // Mecánica (punto 5° del Anexo I)
   montoMinimo: "Gs. 100.000",
   documentoValido: "factura física",
-  comoSeRegistra: "",        // cómo entra la factura al sorteo (urna, cupón, carga online…)
+  comoSeRegistra: "el cliente registra cada factura en este sitio web, cargando nombre, apellido, número de cédula, teléfono, sucursal y una foto legible de la factura. Se permite una carga por cédula por día. Cada factura registrada y aprobada por el organizador equivale a una participación. El ganador deberá presentar la factura física original y su cédula de identidad para retirar el premio",        // cómo entra la factura al sorteo (urna, cupón, carga online…)
 
   // Sucursales donde se exhiben los premios (punto 4.3)
   sucursales: [
