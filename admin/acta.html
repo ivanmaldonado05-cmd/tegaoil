@@ -52,7 +52,7 @@
   <script>
   (async function () {
     const { api, esc, fmtDate, fmtCi } = window.TG;
-    const ROL = { ganador: "Ganador", suplente1: "Suplente 1", suplente2: "Suplente 2" };
+    const ROL = { ganador: "Ganador", suplente1: "Suplente", suplente2: "Suplente 2" };
     let a;
     try {
       const s = await api("session");
@@ -64,7 +64,8 @@
     a.results.forEach((r) => (byPrize[r.prize_id] = byPrize[r.prize_id] || []).push(r));
     const rows = a.prizes.map((p) => {
       const rs = byPrize[p.id] || [];
-      return ["ganador", "suplente1", "suplente2"].map((rol) => {
+      const roles = rs.some((x) => x.rol === "suplente2") ? ["ganador", "suplente1", "suplente2"] : ["ganador", "suplente1"];
+      return roles.map((rol) => {
         const r = rs.find((x) => x.rol === rol);
         return r
           ? `<tr class="${rol === "ganador" ? "g" : ""}"><td>${esc(p.titulo)}<br><span class="muted">${esc(p.detalle)}</span></td><td>${ROL[rol]}</td><td>${esc(r.nombre)}</td><td>${esc(fmtCi(r.ci))}</td><td>${esc(r.telefono)}</td><td>${esc(r.numero)}</td><td>${esc(fmtDate(r.at))}<br><span class="muted">${r.pool.toLocaleString("es-PY")} habilitadas</span></td></tr>`
@@ -82,7 +83,9 @@
         <dt>Organizador</dt><dd>VEVIL EAS — RUC 80161517-8</dd>
         <dt>Lugar de la promoción</dt><dd>Estaciones de servicio Tega Oil</dd>
         <dt>Vigencia</dt><dd>10/11/2026 al 31/03/2027</dd>
-        <dt>Mecánica</dt><dd>Compra desde Gs. 100.000 · factura física · registro online, una carga por cédula por día</dd>
+        <dt>Mecánica</dt><dd>Compra desde Gs. 100.000 con factura física · registro en veviltegaoil.com, una carga por cédula por día</dd>
+        <dt>Modalidad</dt><dd>Cupones y bolillero electrónico, visualizado en tiempo real en la página web</dd>
+        <dt>Lugar del sorteo</dt><dd>Avda. Manuel Ortiz Guerrero esq. Puerto Rosario – San Lorenzo</dd>
         <dt>Autoridad</dt><dd>Comisión Nacional de Juegos de Azar (CONAJZAR) — Ley N° 1016/1997</dd>
       </dl>
 
@@ -96,9 +99,9 @@
       : `<p class="pending">La lista todavía no fue cerrada.</p>`}
 
       <h2>Resultados</h2>
-      <p class="muted">Cada resultado fue elegido por el servidor con un generador de números aleatorios criptográficamente seguro, entre las participaciones habilitadas en ese momento. Un premio por persona: quien ya salió sorteado no vuelve a participar.</p>
+      <p class="muted">Cada resultado fue elegido por el servidor con un generador de números aleatorios criptográficamente seguro, entre las participaciones habilitadas en ese momento. Un ganador y un suplente por premio. Un premio por persona: quien ya salió sorteado no vuelve a participar.</p>
       <table>
-        <thead><tr><th>Premio</th><th>Rol</th><th>Nombre</th><th>Cédula</th><th>Teléfono</th><th>N° part.</th><th>Hora</th></tr></thead>
+        <thead><tr><th>Premio</th><th>Rol</th><th>Nombre</th><th>Cédula</th><th>Teléfono</th><th>Cupón</th><th>Hora</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
 

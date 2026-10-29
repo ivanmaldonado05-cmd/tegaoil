@@ -18,6 +18,7 @@
       b.hidden = reg.state === "abierto";
       b.innerHTML = reg.state === "pronto" ? "<strong>El registro todavía no está abierto al público.</strong> Se habilita automáticamente en la fecha de inicio."
         : "<strong>El registro está cerrado.</strong> " + (reg.open ? "" : "Las participaciones ya no se pueden modificar si la lista del sorteo está cerrada.");
+      $("#btnWipe").hidden = !d.wipe_allowed;
       render();
       return keepIdx;
     } catch (e) { toast(e.message); }
@@ -73,6 +74,19 @@
   let qT;
   $("#search").addEventListener("input", (e) => { clearTimeout(qT); qT = setTimeout(() => { state.q = e.target.value.trim(); state.page = 1; load(); }, 300); });
   $("#search").addEventListener("submit", (e) => e.preventDefault());
+
+  // ---------- Borrar datos de prueba ----------
+  $("#btnWipe").addEventListener("click", () => { $("#wipeModal").hidden = false; $("#wipeError").hidden = true; $("#wipeForm").reset(); });
+  $("#wipeForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    try {
+      await api("test.wipe", { method: "POST", body: { confirm: e.target.confirm.value.trim() } });
+      $("#wipeModal").hidden = true;
+      toast("Datos de prueba borrados");
+      state.page = 1;
+      load();
+    } catch (er) { $("#wipeError").textContent = er.message; $("#wipeError").hidden = false; }
+  });
 
   // ---------- Revisión ----------
   const modal = $("#modal");
@@ -154,13 +168,14 @@
   const { api, esc, $, toast, fmtDate } = window.TG;
   const btn = $("#btnLog");
   if (!btn) return;
-  const ROL = { ganador: "ganador", suplente1: "suplente 1", suplente2: "suplente 2" };
+  const ROL = { ganador: "ganador", suplente1: "suplente", suplente2: "suplente 2" };
   function describe(r) {
     let d = {};
     try { d = JSON.parse(r.detail); } catch { return { label: r.action, cls: "", text: r.detail }; }
     const num = (id) => "#" + String(id).padStart(6, "0");
     switch (r.action) {
       case "review": return { label: d.estado === "aprobada" ? "Aprobó" : d.estado === "rechazada" ? "Rechazó" : "Volvió a pendiente", cls: d.estado, text: `${num(d.id)}${d.motivo ? " — " + d.motivo : ""}${d.nro_factura ? " · factura " + d.nro_factura : ""}` };
+      case "test.wipe": return { label: "Borró los datos de prueba", cls: "reset", text: "" };
       case "draw.seal": return { label: "Cerró la lista", cls: "sorteo", text: `${d.total} participaciones · huella ${String(d.hash).slice(0, 16)}…` };
       case "draw.spin": return { label: "Giro", cls: "sorteo", text: `${d.prize} · ${ROL[d.rol] || d.rol} · ${num(d.entry)} (entre ${d.pool})` };
       default: return { label: r.action, cls: "", text: typeof d === "object" ? JSON.stringify(d) : String(d) };

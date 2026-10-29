@@ -9,8 +9,8 @@
     "moto-blanca-2": "../assets/img/premios/moto-cf125-blanca.jpg",
     "moto-negra": "../assets/img/premios/moto-cf125-negra.jpg",
   };
-  const ROL = { ganador: "¡Ganador!", suplente1: "1er suplente", suplente2: "2do suplente" };
-  const ROL_BTN = { ganador: "Sortear GANADOR", suplente1: "Sortear 1er SUPLENTE", suplente2: "Sortear 2do SUPLENTE" };
+  const ROL = { ganador: "¡Ganador!", suplente1: "Suplente", suplente2: "2do suplente" };
+  const ROL_BTN = { ganador: "Sortear GANADOR", suplente1: "Sortear SUPLENTE", suplente2: "Sortear 2do SUPLENTE" };
   const DURATION = 7500;
 
   let draw = null, selected = null, spinning = false, sound = true, rotation = 0;
@@ -45,7 +45,7 @@
       return `<button class="pz__item ${selected === p.id ? "is-active" : ""}" data-id="${p.id}" ${done ? "disabled" : ""}>
         <img class="pz__img" src="${IMG[p.id] || ""}" alt="">
         <span><span class="pz__t">${esc(p.titulo)}</span><br><span class="pz__d">${esc(p.detalle)}</span>${done ? `<br><span class="pz__done">✓ Sorteado</span>` : ""}</span>
-        <span class="pz__res">${p.results.map((r) => `<div class="${r.rol === "ganador" ? "" : "s"}"><b>${r.rol === "ganador" ? "Ganador" : r.rol === "suplente1" ? "Suplente 1" : "Suplente 2"}</b><span>${esc(r.nombre)} · ${esc(r.ci_mask)}</span></div>`).join("")}</span>
+        <span class="pz__res">${p.results.map((r) => `<div class="${r.rol === "ganador" ? "" : "s"}"><b>${r.rol === "ganador" ? "Ganador" : r.rol === "suplente1" ? "Suplente" : "Suplente 2"}</b><span>${esc(r.nombre)} · ${esc(r.ci_mask)}</span></div>`).join("")}</span>
       </button>`;
     }).join("");
   }
@@ -197,7 +197,7 @@
     $("#rvImg").src = IMG[r.prize.id] || "";
     $("#rvPrize").textContent = `${r.prize.titulo} · ${r.prize.detalle}`;
     $("#rvName").textContent = r.nombre;
-    $("#rvMeta").innerHTML = `CI <b>${esc(r.ci_mask)}</b> · ${esc(r.sucursal.split(" — ")[0])} · Participación <b>${esc(r.numero)}</b>`;
+    $("#rvMeta").innerHTML = `CI <b>${esc(r.ci_mask)}</b> · ${esc(r.sucursal.split(" — ")[0])} · Cupón <b>${esc(r.numero)}</b>`;
     $("#reveal").hidden = false;
     fanfare();
     confetti(sup ? 90 : 220);

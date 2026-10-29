@@ -38,6 +38,7 @@
         <a href="#sucursales">Sucursales</a>
         <a href="#bases">Bases y condiciones</a>
         <a href="#faq">Preguntas</a>
+        <a href="en-vivo.html">Sorteo en vivo</a>
         <a href="#registro" class="only-pre nav__cta">Registrá tu factura</a>
       </nav>
     </div>
@@ -79,7 +80,7 @@
         </div>
         <div class="winners" id="winnersGrid"></div>
         <div class="video" id="videoWrap" hidden></div>
-        <p class="note center">Los ganadores tienen <strong>60 días</strong> para retirar su premio (Art. 19, Ley N° 1016/97).</p>
+        <p class="note center">Los ganadores tienen <strong>60 días hábiles</strong> para retirar su premio presentando su cédula de identidad (Art. 19, Ley N° 1016/97).</p>
       </div>
     </section>
 
@@ -111,7 +112,7 @@
           <li class="step">
             <span class="step__n">02</span>
             <h3>Pedí tu factura física</h3>
-            <p>Es el documento válido de la promoción. Guardala: la vas a necesitar para retirar tu premio si ganás.</p>
+            <p>Comprá con factura física: es el comprobante válido de la promoción.</p>
           </li>
           <li class="step">
             <span class="step__n">03</span>
@@ -185,8 +186,8 @@
 
             <div class="checks">
               <label class="check"><input type="checkbox" name="mayor" value="1" required><span>Soy mayor de 18 años.</span></label>
-              <label class="check"><input type="checkbox" name="bases" value="1" required><span>Leí y acepto las <a href="#bases">bases y condiciones</a>.</span></label>
-              <label class="check"><input type="checkbox" name="datos" value="1" required><span>Autorizo el uso de mis datos únicamente para la gestión de este sorteo.</span></label>
+              <label class="check"><input type="checkbox" name="bases" value="1" required><span>Leí y acepto las <a href="#bases">bases y condiciones</a> y las <a href="condiciones.html" target="_blank">condiciones de uso</a>.</span></label>
+              <label class="check"><input type="checkbox" name="datos" value="1" required><span>Autorizo el uso de mis datos para la gestión de este sorteo, según el <a href="condiciones.html#privacidad" target="_blank">aviso de privacidad</a>.</span></label>
             </div>
 
             <!-- campo trampa para bots -->
@@ -194,15 +195,15 @@
 
             <p class="form__error" id="regError" role="alert" hidden></p>
             <button class="btn btn--primary form__submit" id="regSubmit" type="submit">Registrar factura</button>
-            <p class="form__note">Guardá tu factura física original: el ganador debe presentarla junto con su cédula para retirar el premio.</p>
+            <p class="form__note"><strong>Uso de tus datos:</strong> los usamos solo para verificar tu participación, contactarte si ganás y publicar la lista de ganadores (nombre, apellido y los 3 últimos dígitos de la cédula). No los compartimos con terceros. <a href="condiciones.html#privacidad" target="_blank">Más información</a>.</p>
           </form>
 
           <div class="reg__ok" id="regOk" hidden>
             <div class="reg__check" aria-hidden="true">✓</div>
             <h3>¡Listo, <span id="okName"></span>!</h3>
-            <p>Tu factura quedó registrada con el número</p>
+            <p>Tu factura quedó registrada. Tu número de cupón es</p>
             <p class="reg__num" id="okNum"></p>
-            <p class="muted">Nuestro equipo la va a revisar. Guardá este número y tu factura física. Podés registrar otra factura mañana.</p>
+            <p class="muted">Nuestro equipo la va a revisar. Guardá este número. Podés registrar otra factura mañana.</p>
             <button type="button" class="btn btn--ghost" id="regAgain">Volver</button>
           </div>
         </div>

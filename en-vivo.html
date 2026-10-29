@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sorteo en vivo — Vevil Premia tu Preferencia</title>
+  <meta name="description" content="Seguí en tiempo real el sorteo de la promoción Vevil Premia tu Preferencia de Tega Oil: 4 motos CF 125 y un cuadriciclo AU200.">
+  <link rel="canonical" href="https://veviltegaoil.com/en-vivo.html">
+  <meta property="og:title" content="Sorteo en vivo — Vevil Premia tu Preferencia">
+  <meta property="og:description" content="Seguí el sorteo en tiempo real: 4 motos y un cuadriciclo.">
+  <meta property="og:image" content="https://veviltegaoil.com/assets/img/estacion.jpg">
+  <link rel="icon" href="assets/img/tega-iso.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin/admin.css">
+  <link rel="stylesheet" href="admin/sorteo.css">
+  <link rel="stylesheet" href="assets/css/vivo.css">
+</head>
+<body class="draw-page">
+  <div class="stage">
+    <header class="top">
+      <a class="top__brand" href="./"><img src="assets/img/tega-logo.svg" alt="Tega Oil"><span>Sorteo en vivo</span></a>
+      <nav class="top__nav">
+        <span class="live" id="liveBadge"><span class="live__dot"></span><span id="liveText">Conectando…</span></span>
+        <button class="linkbtn" id="btnSound" type="button">🔇 Activar sonido</button>
+        <a href="./">Volver al sitio</a>
+      </nav>
+    </header>
+
+    <div class="show">
+      <div class="show__head">
+        <div class="show__brands">
+          <img src="assets/img/tega-logo-white.svg" alt="Tega Oil">
+          <span>×</span>
+          <img src="assets/img/vevil-logo.png?v=2" alt="Vevil">
+        </div>
+        <h1 class="show__title">Vevil <span>Premia tu Preferencia</span></h1>
+        <div class="seal" id="seal"></div>
+      </div>
+
+      <div class="show__main">
+        <div class="wheel-area">
+          <div class="wheel">
+            <div class="wheel__pointer" aria-hidden="true"></div>
+            <svg class="wheel__svg" id="wheel" viewBox="-110 -110 220 220" aria-hidden="true"></svg>
+            <div class="reel" id="reel" aria-live="polite">
+              <div class="reel__strip" id="reelStrip"><div class="reel__item" id="reelIdle">¿Quién gana?</div></div>
+            </div>
+          </div>
+          <div class="spin">
+            <p class="spin__prize" id="status">Cargando…</p>
+            <p class="spin__pool" id="sub"></p>
+          </div>
+        </div>
+
+        <aside class="prizes-panel">
+          <h2>Ganadores</h2>
+          <div class="pz" id="prizes"></div>
+        </aside>
+      </div>
+      <p class="vivo-legal">Sorteo con cupones y bolillero electrónico, visualizado en tiempo real. Lista de ganadores: nombre, apellido y tres últimos dígitos de la cédula. Ganadores notificados por teléfono dentro de las 48 horas · Retiro con cédula de identidad dentro de los 60 días hábiles.</p>
+    </div>
+
+    <div class="reveal-box" id="reveal" hidden>
+      <canvas class="confetti" id="confetti"></canvas>
+      <div class="reveal-card">
+        <p class="reveal-card__rol" id="rvRol">¡Ganador!</p>
+        <img class="reveal-card__img" id="rvImg" alt="">
+        <p class="reveal-card__prize" id="rvPrize"></p>
+        <h2 class="reveal-card__name" id="rvName"></h2>
+        <p class="reveal-card__meta" id="rvMeta"></p>
+        <button class="btn btn--primary" id="rvClose">Seguir viendo</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/vivo.js"></script>
+</body>
+</html>

@@ -22,7 +22,7 @@ const PRIZES = [
   { id: "moto-blanca-2", titulo: "Moto CF 125", detalle: "Color blanco · Año 2025" },
   { id: "moto-negra", titulo: "Moto CF 125", detalle: "Color negro · Año 2025" },
 ];
-const ROLES = ["ganador", "suplente1", "suplente2"];
+const ROLES = ["ganador", "suplente1"];
 const SUCURSALES = [
   "San Lorenzo — Avda. Manuel Ortiz Guerrero esq. Puerto Rosario",
   "Barcequillo — Avda. Pratt Gill esq. Capitolio",
@@ -37,7 +37,7 @@ const sessions = new Map(); // sid -> {csrf, auth, user}
 const pyNow = () => new Date(Date.now() - 3 * 3600e3).toISOString().replace("T", " ").slice(0, 19);
 const pyToday = () => pyNow().slice(0, 10);
 const numero = (id) => "#" + String(id).padStart(6, "0");
-const maskCi = (ci) => { const d = String(ci); if (d.length <= 3) return "***"; const head = d.slice(0, Math.max(0, d.length - 6)); return (head ? head + "." : "") + "***." + d.slice(-3); };
+const maskCi = (ci) => { const d = String(ci); if (d.length <= 3) return "***"; const rev = ("*".repeat(d.length - 3) + d.slice(-3)).split("").reverse().join(""); return rev.match(/.{1,3}/g).join(".").split("").reverse().join(""); };
 const shortName = (n, a) => `${n.split(" ")[0]} ${a.trim()[0] ? a.trim()[0].toUpperCase() + "." : ""}`.trim();
 
 if (SEED) {
@@ -153,6 +153,14 @@ async function apiHandler(req, res, url) {
     return send(res, 200, { ok: true, entries: rows });
   }
 
+  if (action === "draw.public") {
+    const st = drawState();
+    const prizes = st.prizes.map((p) => ({ id: p.id, titulo: p.titulo, detalle: p.detalle, next: p.next, results: p.results.map((r) => ({ ...r, sucursal: r.sucursal.split(" — ")[0] })) }));
+    const snap = db.draw?.snapshot || [];
+    const reel = snap.length ? Array.from({ length: Math.min(30, snap.length) }, () => { const id = snap[crypto.randomInt(snap.length)][0]; const e = db.entries.find((x) => x.id === id); return shortName(e.nombre, e.apellido); }) : [];
+    return send(res, 200, { ok: true, draw: { sealed: st.sealed, sealed_at: st.sealed_at, total: st.total, hash: st.hash, eligible: st.eligible, count: db.results.length, prizes }, reel });
+  }
+
   if (action === "session") return send(res, 200, { ok: true, auth: s.auth, csrf: s.csrf, user: s.user || null });
 
   const csrfOk = () => req.headers["x-csrf"] === s.csrf;
@@ -184,7 +192,7 @@ async function apiHandler(req, res, url) {
     const c = (k) => db.entries.filter((e) => e.estado === k).length;
     return send(res, 200, { ok: true, entries: rows, total: list.length, page, per,
       counts: { pendiente: c("pendiente"), aprobada: c("aprobada"), rechazada: c("rechazada"), personas: new Set(db.entries.filter((e) => e.estado === "aprobada").map((e) => e.ci)).size },
-      registro: registro() });
+      registro: registro(), wipe_allowed: Date.now() < Date.parse("2026-11-10T00:00:00-03:00") });
   }
 
   if (action === "photo") {
@@ -249,7 +257,7 @@ async function apiHandler(req, res, url) {
       if (!prize) return fail(422, "Premio inválido.");
       if (!db.draw) return fail(422, "Primero cerrá la lista de participantes.");
       const rol = ROLES[db.results.filter((r) => r.prize_id === prize.id).length];
-      if (!rol) return fail(422, "Este premio ya tiene ganador y 2 suplentes.");
+      if (!rol) return fail(422, "Este premio ya tiene ganador y suplente.");
       const drawn = new Set(db.results.map((r) => r.ci));
       const pool = db.draw.snapshot.filter((r) => !drawn.has(r[1]));
       if (!pool.length) return fail(422, "No quedan participantes habilitados.");
@@ -265,6 +273,11 @@ async function apiHandler(req, res, url) {
       db.results = []; db.draw = null;
       addLog(s.user, "draw.reset", "Sorteo reiniciado");
       return send(res, 200, { ok: true, draw: drawState() });
+    case "test.wipe":
+      if (b.confirm !== "BORRAR TODO") return fail(422, "Escribí BORRAR TODO para confirmar.");
+      db.entries = []; db.results = []; db.draw = null; db.log = []; db.seq = 0;
+      addLog(s.user, "test.wipe", "Datos de prueba borrados");
+      return send(res, 200, { ok: true });
     case "password": return fail(422, "En el servidor de prueba la contraseña es fija (admin12345).");
   }
   return fail(404, "Acción desconocida");

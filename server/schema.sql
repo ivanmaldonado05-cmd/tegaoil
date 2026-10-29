@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS tg_draw (
   snapshot LONGTEXT NOT NULL                 -- JSON: [[id, ci], ...] en el orden en que se calculó la huella
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Resultados: ganador + 2 suplentes por premio
+-- Resultados: ganador + suplente por premio (suplente2 queda disponible si se amplía)
 CREATE TABLE IF NOT EXISTS tg_results (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   prize_id VARCHAR(40) NOT NULL,

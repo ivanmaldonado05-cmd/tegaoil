@@ -78,3 +78,18 @@ El cliente confirmó (24/10/2026) que no hay más datos. Campos opcionales en `c
 ### Pendiente
 - Probar el PHP en Hostinger (no hay PHP local; se probó todo con el servidor de prueba).
 - Cliente: confirmar con CONAJZAR registro online + bolillero electrónico; orden de los premios.
+
+## Ajustes por las Bases y Condiciones oficiales (29/10/2026)
+Fuente: `Bases y Condiciones CONAJZAR.docx` del cliente (transcriptas en el sitio, cláusulas 1–19 + Anexo + disposiciones del Anexo I).
+- Lugar del sorteo: Avda. Manuel Ortiz Guerrero esq. Puerto Rosario – San Lorenzo.
+- Modalidad: cupones y bolillero electrónico **visualizado en tiempo real en la web** → página pública `/en-vivo.html` (consulta `draw.public` cada 2,5 s y anima cada resultado).
+- **1 suplente por premio** (antes 2). `TG_ROLES` en `server/lib.php`.
+- Retiro: 60 días **hábiles**, único documento: **cédula** (se quitó "presentar la factura").
+- Publicación de ganadores: nombre, apellido y **3 últimos dígitos** de la CI (`*.***.064`).
+- Aviso de privacidad en el formulario + página `/condiciones.html` (condiciones de uso de la plataforma + privacidad, cláusulas 14 y 17). **Borrador: que lo revise el abogado del cliente.**
+- Panel: botón "Borrar datos de prueba" (solo antes del 10/11/2026, escribiendo BORRAR TODO).
+
+### A confirmar con el cliente
+- Bases dicen "personas físicas [o jurídicas]" (corchete de plantilla): en el sitio quedó "personas físicas".
+- "CUACICLON AU200" en las bases → en el sitio "Cuadriciclo AU200". ¿Cuatriciclo?
+- Hora del sorteo y N° de certificado CONAJZAR (los avisos deben incluirlo).

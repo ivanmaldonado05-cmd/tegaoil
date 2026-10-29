@@ -23,7 +23,8 @@ const TG_PRIZES = [
     ['id' => 'moto-blanca-2', 'titulo' => 'Moto CF 125',       'detalle' => 'Color blanco · Año 2025'],
     ['id' => 'moto-negra',    'titulo' => 'Moto CF 125',       'detalle' => 'Color negro · Año 2025'],
 ];
-const TG_ROLES = ['ganador', 'suplente1', 'suplente2'];
+// Bases: un ganador y un suplente por premio
+const TG_ROLES = ['ganador', 'suplente1'];
 
 const TG_SUCURSALES = [
     'San Lorenzo — Avda. Manuel Ortiz Guerrero esq. Puerto Rosario',
@@ -158,14 +159,21 @@ function tg_short_name(string $nombre, string $apellido): string
     return trim($first . ($ini !== '' ? " $ini." : ''));
 }
 
-/** "4301064" → "4.***.064" */
+/** "4301064" → "*.***.064" (las bases publican solo los tres últimos dígitos) */
 function tg_mask_ci(string $ci): string
 {
     $d = preg_replace('/\D+/', '', $ci) ?? '';
     if (strlen($d) <= 3) return str_repeat('*', strlen($d));
-    $last = substr($d, -3);
-    $head = substr($d, 0, max(0, strlen($d) - 6));
-    return ($head !== '' ? $head . '.' : '') . '***.' . $last;
+    $masked = str_repeat('*', strlen($d) - 3) . substr($d, -3);
+    // puntos de miles: *.***.064
+    return strrev(implode('.', str_split(strrev($masked), 3)));
+}
+
+/** Borrado de datos de prueba: solo antes del inicio real de la promoción (no depende de config.php). */
+const TG_PROMO_START = "2026-11-10 00:00:00";
+function tg_wipe_allowed(): bool
+{
+    return new DateTimeImmutable("now") < new DateTimeImmutable(TG_PROMO_START);
 }
 
 function tg_numero(int $id): string

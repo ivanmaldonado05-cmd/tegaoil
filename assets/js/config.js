@@ -15,22 +15,21 @@ window.SORTEO = {
   fechaSorteo: "2027-03-31",
   horaSorteo: "",            // ej.: "19:00" — si está vacío, la cuenta regresiva apunta al inicio del día
   listaGanadores: "2027-04-02",
-  lugarSorteo: "",           // lugar del sorteo
-  modalidad: "",             // ej.: "boletas físicas en urna" / "bolillero electrónico"
+  lugarSorteo: "Avda. Manuel Ortiz Guerrero esquina Puerto Rosario – San Lorenzo",
+  modalidad: "cupones y bolillero electrónico, que será visualizado en tiempo real en la página web de la empresa durante la realización del sorteo y proclamación de los ganadores",
 
   // Empresa organizadora
   empresa: {
     razonSocial: "VEVIL EAS",
     ruc: "80161517-8",
     domicilio: "Alas Paraguayas N° 631, Asunción",
-    telefono: "0991 895 589",
+    telefono: "+595 991 895589",
     autorizacionCONAJZAR: ""   // N° de certificado de autorización
   },
 
   // Mecánica (punto 5° del Anexo I)
   montoMinimo: "Gs. 100.000",
   documentoValido: "factura física",
-  comoSeRegistra: "el cliente registra cada factura en este sitio web, cargando nombre, apellido, número de cédula, teléfono, sucursal y una foto legible de la factura. Se permite una carga por cédula por día. Cada factura registrada y aprobada por el organizador equivale a una participación. El ganador deberá presentar la factura física original y su cédula de identidad para retirar el premio",        // cómo entra la factura al sorteo (urna, cupón, carga online…)
 
   // Sucursales donde se exhiben los premios (punto 4.3)
   sucursales: [

@@ -78,6 +78,33 @@ try {
         tg_json(['ok' => true, 'entries' => $rows]);
     }
 
+    if ($action === 'draw.public') {
+        // Sorteo visible en tiempo real en el sitio (bases: "visualizado en tiempo real en la página web")
+        $s = tg_draw_state();
+        $prizes = array_map(function ($p) {
+            return ['id' => $p['id'], 'titulo' => $p['titulo'], 'detalle' => $p['detalle'], 'next' => $p['next'],
+                'results' => array_map(function ($r) {
+                    return ['rol' => $r['rol'], 'numero' => $r['numero'], 'nombre' => $r['nombre'], 'ci_mask' => $r['ci_mask'], 'sucursal' => explode(' — ', $r['sucursal'])[0], 'at' => $r['at']];
+                }, $p['results'])];
+        }, $s['prizes']);
+        $reel = [];
+        if ($s['sealed']) {
+            $snap = json_decode((string)tg_draw_row()['snapshot'], true) ?: [];
+            $n = count($snap);
+            $ids = [];
+            for ($i = 0; $i < min(30, $n); $i++) $ids[] = (int)$snap[random_int(0, $n - 1)][0];
+            if ($ids) {
+                $q = tg_db()->prepare('SELECT id, nombre, apellido FROM tg_entries WHERE id IN (' . implode(',', array_fill(0, count($ids), '?')) . ')');
+                $q->execute($ids);
+                foreach ($q->fetchAll() as $r) $reel[] = tg_short_name($r['nombre'], $r['apellido']);
+            }
+        }
+        $count = 0;
+        foreach ($prizes as $p) $count += count($p['results']);
+        tg_json(['ok' => true, 'draw' => ['sealed' => $s['sealed'], 'sealed_at' => $s['sealed_at'], 'total' => $s['total'], 'hash' => $s['hash'],
+            'eligible' => $s['eligible'], 'count' => $count, 'prizes' => $prizes], 'reel' => $reel]);
+    }
+
     /* ================= Sesión del panel ================= */
     if ($action === 'session') {
         tg_json(['ok' => true, 'auth' => tg_is_auth(), 'csrf' => $_SESSION['csrf'], 'user' => $_SESSION['user'] ?? null]);
@@ -142,7 +169,7 @@ try {
         $people = (int)$db->query("SELECT COUNT(DISTINCT ci) FROM tg_entries WHERE estado = 'aprobada'")->fetchColumn();
         tg_json(['ok' => true, 'entries' => $rows, 'total' => $total, 'page' => $page, 'per' => $per,
             'counts' => ['pendiente' => (int)($counts['pendiente'] ?? 0), 'aprobada' => (int)($counts['aprobada'] ?? 0), 'rechazada' => (int)($counts['rechazada'] ?? 0), 'personas' => $people],
-            'registro' => tg_registro_abierto()]);
+            'registro' => tg_registro_abierto(), 'wipe_allowed' => tg_wipe_allowed()]);
     }
 
     if ($action === 'photo') {
@@ -269,7 +296,7 @@ try {
             $done = $db->prepare('SELECT COUNT(*) FROM tg_results WHERE prize_id = ? FOR UPDATE');
             $done->execute([$prizeId]);
             $rol = TG_ROLES[(int)$done->fetchColumn()] ?? null;
-            if (!$rol) { $db->rollBack(); throw new InvalidArgumentException('Este premio ya tiene ganador y 2 suplentes.'); }
+            if (!$rol) { $db->rollBack(); throw new InvalidArgumentException('Este premio ya tiene ganador y suplente.'); }
 
             // 1 premio por persona: quien ya salió (ganador o suplente) no vuelve a participar
             $drawn = array_flip($db->query('SELECT DISTINCT ci FROM tg_results')->fetchAll(PDO::FETCH_COLUMN));
@@ -313,6 +340,18 @@ try {
             $db->exec('DELETE FROM tg_draw');
             tg_log('draw.reset', 'Sorteo reiniciado');
             tg_json(['ok' => true, 'draw' => tg_draw_state()]);
+        }
+
+        case 'test.wipe': {
+            // Borra TODOS los datos (registros, fotos, sorteo, historial). Solo antes del inicio real de la promoción.
+            if (!tg_wipe_allowed()) throw new InvalidArgumentException('La promoción ya comenzó: los datos no se pueden borrar.');
+            if ((string)(tg_body()['confirm'] ?? '') !== 'BORRAR TODO') throw new InvalidArgumentException('Escribí BORRAR TODO para confirmar.');
+            foreach (['tg_results', 'tg_draw', 'tg_entries', 'tg_attempts', 'tg_log'] as $t) $db->exec("DELETE FROM $t");
+            $db->exec('ALTER TABLE tg_entries AUTO_INCREMENT = 1');
+            if (is_dir(TG_DATA_DIR)) $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(TG_DATA_DIR, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
+            foreach ($it ?? [] as $f) { $f->isDir() ? @rmdir($f->getPathname()) : @unlink($f->getPathname()); }
+            tg_log('test.wipe', 'Datos de prueba borrados');
+            tg_json(['ok' => true]);
         }
 
         case 'password': {
