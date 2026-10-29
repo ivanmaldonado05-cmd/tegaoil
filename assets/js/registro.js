@@ -9,6 +9,8 @@
   const fileInput = $("#foto"), preview = $("#preview");
   const startedAt = Math.floor(Date.now() / 1000);
   let photoBlob = null;
+  // PRUEBA TEMPORAL: ?prueba=LLAVE habilita el formulario antes del inicio (quitar después de la prueba)
+  const testKey = new URLSearchParams(location.search).get("prueba") || "";
 
   const showError = (msg) => { err.textContent = msg; err.hidden = !msg; if (msg) err.scrollIntoView({ block: "center", behavior: "smooth" }); };
   const setStatus = (html, kind) => { status.innerHTML = html; status.className = "reg__status reg__status--" + kind; status.hidden = false; };
@@ -20,7 +22,7 @@
     .then((d) => {
       const sel = form.elements.sucursal;
       d.sucursales.forEach((s) => sel.add(new Option(s, s)));
-      if (!d.registro.open) {
+      if (!d.registro.open && !testKey) {
         form.hidden = true;
         setStatus(d.registro.state === "pronto"
           ? `<strong>El registro se habilita el ${fmt(d.registro.desde)}.</strong><br>Guardá tus facturas de compras desde esa fecha.`
@@ -108,6 +110,7 @@
     fd.append("telefono", tel);
     ["mayor", "bases", "datos"].forEach((k) => fd.append(k, el[k].checked ? "1" : ""));
     fd.append("t", String(startedAt));
+    if (testKey) fd.append("test_key", testKey);
     fd.append("foto", photoBlob, "factura.jpg");
 
     submit.disabled = true;
