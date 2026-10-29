@@ -110,7 +110,8 @@
 
   // ---------- Bases y condiciones oficiales (presentadas a la CONAJZAR) + cláusulas del Anexo I ----------
   const sucList = `<ul>${C.sucursales.map((s) => `<li>${esc(s.direccion)} – ${esc(s.nombre)}</li>`).join("")}</ul>`;
-  const premiosList = `<ul>${C.premios.map((p) => `<li>1 ${esc(p.titulo)} – ${esc(p.detalle)}</li>`).join("")}</ul>`;
+  const sucDe = (p) => { const s = C.sucursales.find((x) => x.nombre === p.sucursal); return s ? `${s.direccion} – ${s.nombre}` : ""; };
+  const premiosList = `<ul>${C.premios.map((p) => `<li>1 ${esc(p.titulo)} – ${esc(p.detalle)}${sucDe(p) ? ` – <strong>Sucursal ${esc(sucDe(p))}</strong>` : ""}</li>`).join("")}</ul>`;
   const bases = [
     ["1. Organizador", `
       <p><strong>${esc(E.razonSocial)}</strong>, en adelante el ORGANIZADOR, con RUC N° ${esc(E.ruc)}, domicilio situado en la calle ${esc(E.domicilio)}, teléfono ${esc(E.telefono)}, realizará la promoción denominada <strong>${esc(C.nombre.toUpperCase())}</strong>, en adelante la PROMOCIÓN.</p>`],
@@ -127,14 +128,16 @@
       </ul>`],
     ["5. Sistema de participación", `
       <p>Participan de la promoción todos los clientes que hayan realizado compras por valor de <strong>${esc(C.montoMinimo)} (cien mil guaraníes)</strong>, en cualquiera de los productos comercializados por la Estación de Servicios y con <strong>${esc(C.documentoValido)}</strong>, durante la vigencia de la PROMOCIÓN.</p>
-      <p>Para participar se debe rellenar el formulario de registro en la página web de la empresa (veviltegaoil.com), cargando los datos personales y la foto de la factura. Se permite una carga por cédula de identidad por día. Cada factura registrada y aprobada por el ORGANIZADOR genera un cupón con su número de participación.</p>`],
+      <p>Para participar se debe rellenar el formulario de registro en la página web de la empresa (veviltegaoil.com), cargando los datos personales y la foto de la factura. Se permite una carga por cédula de identidad por día. Cada factura registrada y aprobada por el ORGANIZADOR genera un cupón con su número de participación.</p>
+      <p>Cada cupón participa únicamente por el premio asignado a la Estación de Servicios donde se realizó la compra, conforme a la cláusula de Premios y al Anexo de estas bases y condiciones. La sucursal de compra es la que figura en la factura física.</p>`],
     ["6. Premios", `
       <p>Durante la PROMOCIÓN serán sorteados los siguientes premios:</p>${premiosList}
       <p>Los bienes serán depositados para su exhibición en las sucursales de:</p>${sucList}`],
     ["7. Sorteo", `
       <p>El sorteo será realizado en fecha <strong>${drawWhen()}</strong>${C.lugarSorteo ? ` en el local ubicado en <strong>${esc(C.lugarSorteo)}</strong>` : ""}.</p>${C.modalidad ? `
       <p>Como sistema de sorteo se empleará el uso de ${esc(C.modalidad)}.</p>` : ""}
-      <p>Durante el sorteo de cada premio además se seleccionará un cupón que corresponderá al ganador suplente, quien será el acreedor del premio únicamente en caso que el ganador titular se encuentre inhabilitado, según las restricciones de participación de estas bases y condiciones.</p>`],
+      <p>Durante el sorteo de cada premio además se seleccionará un cupón que corresponderá al ganador suplente, quien será el acreedor del premio únicamente en caso que el ganador titular se encuentre inhabilitado, según las restricciones de participación de estas bases y condiciones.</p>
+      <p>El sorteo de cada premio se realizará únicamente entre los cupones correspondientes a la sucursal a la que fue asignado dicho premio. El ganador suplente de cada premio se seleccionará entre los cupones de la misma sucursal.</p>`],
     ["8. Exclusión", `
       <p>En el caso en que el ORGANIZADOR constate que el potencial ganador se encuentra inhabilitado por hallarse dentro de las restricciones de participación establecidas en estas bases y condiciones, se procederá a la anulación del cupón seleccionado, dejando constancia del hecho mediante acta notarial donde se describirá en detalle el motivo. En este caso, el participante con el cupón suplente pasará a ser el acreedor del premio, lo cual se dejará constancia en la misma acta notarial.</p>`],
     ["9. Notificación", `
@@ -160,8 +163,8 @@
     ["19. Jurisdicción", `
       <p>Toda situación que pudiera derivar en un conflicto entre el ORGANIZADOR y el PARTICIPANTE podrá ser resuelta, a pedido de las partes, por la CONAJZAR. Queda además expedita la vía jurisdiccional, en caso que los interesados así lo consideren para la mejor defensa de sus derechos, y a tal efecto, se establecen los tribunales ordinarios de la ciudad de Asunción.</p>`],
     ["Anexo — Listado de premios", `
-      <table class="tbl"><thead><tr><th>Premio</th><th>Cantidad</th><th>Fecha de sorteo</th></tr></thead>
-      <tbody>${C.premios.map((p) => `<tr><td>${esc(p.titulo)} – ${esc(p.detalle)}</td><td>1</td><td>${D(C.fechaSorteo, "fecha")}</td></tr>`).join("")}</tbody></table>`],
+      <table class="tbl"><thead><tr><th>Premio</th><th>Sucursal</th><th>Cantidad</th><th>Fecha de sorteo</th></tr></thead>
+      <tbody>${C.premios.map((p) => `<tr><td>${esc(p.titulo)} – ${esc(p.detalle)}</td><td>${esc(p.sucursal || "")}</td><td>1</td><td>${D(C.fechaSorteo, "fecha")}</td></tr>`).join("")}</tbody></table>`],
     ["Disposiciones CONAJZAR (Anexo I)", `
       <p><strong>1°</strong> El ORGANIZADOR reconoce y acepta: 1.1) a la Comisión Nacional de Juegos de Azar (CONAJZAR) como institución encargada de la supervisión, auditoría y control en lo referente al desarrollo y gestión del juego; 1.2) que toda situación no prevista en el reglamento del juego que pudiera derivar en un conflicto entre la firma y los participantes podrá ser resuelta a pedido de las partes por la CONAJZAR, quedando expedita la vía jurisdiccional; 1.3) que el juego, en cuanto a su alcance o incidencia, resulta solo a nivel nacional; 1.4) que el que tuviera o explotara comercialmente, por sí o por otro, juegos de azar clandestinos o no autorizados será castigado con pena privativa de libertad de hasta 5 (cinco) años o multa, conforme al Art. 17° numeral 1° de la Ley N° 4716/12.</p>
       <p><strong>3°</strong> Fecha cierta de entrega de la lista de ganadores a la CONAJZAR: <strong>${D(C.listaGanadores, "fecha")}</strong>. Los premios no entregados por no presentarse el ganador dentro del plazo establecido en el Art. 19° de la Ley N° 1016/97 serán destinados al financiamiento del FONARESS, conforme lo establece la Ley N° 4392/11 y su modificación, la Ley N° 6703/20.</p>

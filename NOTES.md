@@ -109,4 +109,4 @@ Hostinger/CDN guarda JS/CSS 7 días. Todos los `<script>`/`<link>` llevan `?v=AA
 - La lista cerrada guarda [id, cédula, sucursal]; la huella es SHA-256 de "id|cédula|sucursal".
 - Al revisar una factura, el panel permite **corregir la sucursal** (queda en el historial).
 - **3 links:** sitio `veviltegaoil.com` · público en vivo `/en-vivo.html` · panel `/admin/` (pestañas Participaciones / Sorteo; `admin/sorteo.html` redirige a `/admin/#sorteo`). Acta: botón dentro de la pestaña Sorteo.
-- ⚠️ Las bases presentadas a CONAJZAR no mencionan premios por sucursal: el cliente debe confirmar/actualizar (cláusula 15).
+- Bases y Condiciones (docx del cliente, todavía NO presentado a CONAJZAR) actualizadas 29/10/2026 con la regla por sucursal: cláusula 5 (párrafo nuevo), 6 (sucursal de cada premio), 7.c (sorteo por sucursal) y Anexo. Original guardado como "Bases y Condiciones CONAJZAR (original).docx" en Descargas.
