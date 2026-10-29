@@ -36,7 +36,7 @@
   const C = window.SORTEO || {};
   form.elements.sucursal.addEventListener("change", (e) => {
     const nombre = e.target.value.split(" — ")[0];
-    const p = (C.premios || []).find((x) => x.sucursal === nombre);
+    const p = (C.premios || []).find((x) => x.sucursal && x.sucursal.startsWith(nombre));
     $("#sucHint").innerHTML = p
       ? `En esta sucursal se sortea: <strong>${p.titulo} · ${p.detalle.split(" · ")[0]}</strong>`
       : "Participás por el premio de la sucursal donde compraste.";

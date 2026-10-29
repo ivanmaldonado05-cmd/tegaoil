@@ -29,8 +29,8 @@ const TG_PRIZES = [
     ['id' => 'cuadriciclo',   'titulo' => 'Cuadriciclo AU200', 'detalle' => 'Color blanco / naranja · Año 2026', 'sucursal' => 'Tramo Luque – San Bernardino — Calle Vergel Luqueño'],
     ['id' => 'moto-gris',     'titulo' => 'Moto CF 125',       'detalle' => 'Color gris · Año 2025',             'sucursal' => 'San Lorenzo — Avda. Manuel Ortiz Guerrero esq. Puerto Rosario'],
     ['id' => 'moto-blanca-1', 'titulo' => 'Moto CF 125',       'detalle' => 'Color blanco · Año 2025',           'sucursal' => 'Coronel Oviedo — Dr. Blas Garay esq. Las Residentas'],
-    ['id' => 'moto-blanca-2', 'titulo' => 'Moto CF 125',       'detalle' => 'Color blanco · Año 2025',           'sucursal' => ''],
-    ['id' => 'moto-negra',    'titulo' => 'Moto CF 125',       'detalle' => 'Color negro · Año 2025',            'sucursal' => ''],
+    ['id' => 'moto-blanca-2', 'titulo' => 'Moto CF 125',       'detalle' => 'Color blanco · Año 2025',           'sucursal' => 'Ypacaraí — Iturbe esq. Paraguay'],
+    ['id' => 'moto-negra',    'titulo' => 'Moto CF 125',       'detalle' => 'Color negro · Año 2025',            'sucursal' => 'Barcequillo — Avda. Pratt Gill esq. Capitolio'],
 ];
 // Bases: un ganador y un suplente por premio. Un premio por persona.
 const TG_ROLES = ['ganador', 'suplente1'];
