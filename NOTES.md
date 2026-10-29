@@ -103,7 +103,7 @@ Hostinger/CDN guarda JS/CSS 7 días. Todos los `<script>`/`<link>` llevan `?v=AA
   - Cuadriciclo AU200 → Tramo Luque – San Bernardino
   - Moto gris → San Lorenzo (Ortiz Guerrero)
   - Moto blanca → Coronel Oviedo
-  - Moto blanca → Ypacaraí (por descarte)
+  - Moto blanca → Ypacaraí (confirmado con foto)
   - Moto negra → Barcequillo (Pratt Gill)
   - Un premio sin sucursal no se puede sortear (botón bloqueado).
 - La lista cerrada guarda [id, cédula, sucursal]; la huella es SHA-256 de "id|cédula|sucursal".
