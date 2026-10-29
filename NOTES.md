@@ -93,3 +93,6 @@ Fuente: `Bases y Condiciones CONAJZAR.docx` del cliente (transcriptas en el siti
 - Bases dicen "personas físicas [o jurídicas]" (corchete de plantilla): en el sitio quedó "personas físicas".
 - "CUACICLON AU200" en las bases → en el sitio "Cuadriciclo AU200". ¿Cuatriciclo?
 - Hora del sorteo y N° de certificado CONAJZAR (los avisos deben incluirlo).
+
+### Caché
+Hostinger/CDN guarda JS/CSS 7 días. Todos los `<script>`/`<link>` llevan `?v=AAAAMMDDHHMM`: **al cambiar cualquier JS/CSS, actualizar la versión** (comando en el historial de commits: sed sobre index/en-vivo/condiciones/admin/*.html). Las páginas .html se sirven con `no-cache`.

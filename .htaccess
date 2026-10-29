@@ -20,6 +20,10 @@ ErrorDocument 404 /404.html
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set X-Frame-Options "SAMEORIGIN"
   Header always set Permissions-Policy "geolocation=(), microphone=()"
+  # Las páginas siempre se revalidan (los JS/CSS llevan ?v= y se actualizan al cambiar la versión)
+  <FilesMatch ".html$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
 </IfModule>
 
 <IfModule mod_expires.c>
