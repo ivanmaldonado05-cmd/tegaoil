@@ -169,13 +169,6 @@ function tg_mask_ci(string $ci): string
     return strrev(implode('.', str_split(strrev($masked), 3)));
 }
 
-/** Borrado de datos de prueba: solo antes del inicio real de la promoción (no depende de config.php). */
-const TG_PROMO_START = "2026-11-10 00:00:00";
-function tg_wipe_allowed(): bool
-{
-    return new DateTimeImmutable("now") < new DateTimeImmutable(TG_PROMO_START);
-}
-
 function tg_numero(int $id): string
 {
     return '#' . str_pad((string)$id, 6, '0', STR_PAD_LEFT);

@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="admin.css?v=202610291427">
+  <link rel="stylesheet" href="admin.css?v=202610291429">
 </head>
 <body>
 
@@ -63,7 +63,6 @@
           <input name="q" type="search" placeholder="Buscar por nombre, cédula, teléfono, N° de participación o de factura">
         </form>
         <a class="btn btn--ghost" id="btnExport" href="#">Exportar a Excel</a>
-        <button type="button" class="btn btn--bad" id="btnWipe" hidden>Borrar datos de prueba</button>
       </section>
 
       <section class="list">
@@ -141,19 +140,6 @@
     </form>
   </div>
 
-  <!-- BORRAR DATOS DE PRUEBA -->
-  <div class="modal" id="wipeModal" hidden>
-    <div class="modal__backdrop" data-close></div>
-    <form class="modal__card modal__card--sm" id="wipeForm">
-      <button type="button" class="modal__x" data-close aria-label="Cerrar">×</button>
-      <h2>Borrar datos de prueba</h2>
-      <p class="muted">Borra <strong>todas</strong> las facturas registradas, sus fotos, el sorteo y el historial, para empezar la promoción en limpio. Solo funciona antes del 10/11/2026. Escribí <strong>BORRAR TODO</strong> para confirmar.</p>
-      <input name="confirm" autocomplete="off" placeholder="BORRAR TODO">
-      <p class="error" id="wipeError" hidden></p>
-      <button class="btn btn--bad" type="submit">Borrar todo</button>
-    </form>
-  </div>
-
   <!-- HISTORIAL -->
   <div class="modal" id="logModal" hidden>
     <div class="modal__backdrop" data-close></div>
@@ -167,7 +153,7 @@
 
   <div class="toast" id="toast" hidden></div>
 
-  <script src="common.js?v=202610291427"></script>
-  <script src="admin.js?v=202610291427"></script>
+  <script src="common.js?v=202610291429"></script>
+  <script src="admin.js?v=202610291429"></script>
 </body>
 </html>

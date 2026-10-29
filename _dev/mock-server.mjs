@@ -192,7 +192,7 @@ async function apiHandler(req, res, url) {
     const c = (k) => db.entries.filter((e) => e.estado === k).length;
     return send(res, 200, { ok: true, entries: rows, total: list.length, page, per,
       counts: { pendiente: c("pendiente"), aprobada: c("aprobada"), rechazada: c("rechazada"), personas: new Set(db.entries.filter((e) => e.estado === "aprobada").map((e) => e.ci)).size },
-      registro: registro(), wipe_allowed: Date.now() < Date.parse("2026-11-10T00:00:00-03:00") });
+      registro: registro() });
   }
 
   if (action === "photo") {
@@ -273,11 +273,6 @@ async function apiHandler(req, res, url) {
       db.results = []; db.draw = null;
       addLog(s.user, "draw.reset", "Sorteo reiniciado");
       return send(res, 200, { ok: true, draw: drawState() });
-    case "test.wipe":
-      if (b.confirm !== "BORRAR TODO") return fail(422, "Escribí BORRAR TODO para confirmar.");
-      db.entries = []; db.results = []; db.draw = null; db.log = []; db.seq = 0;
-      addLog(s.user, "test.wipe", "Datos de prueba borrados");
-      return send(res, 200, { ok: true });
     case "password": return fail(422, "En el servidor de prueba la contraseña es fija (admin12345).");
   }
   return fail(404, "Acción desconocida");

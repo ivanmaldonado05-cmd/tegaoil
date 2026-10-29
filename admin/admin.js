@@ -18,7 +18,6 @@
       b.hidden = reg.state === "abierto";
       b.innerHTML = reg.state === "pronto" ? "<strong>El registro todavía no está abierto al público.</strong> Se habilita automáticamente en la fecha de inicio."
         : "<strong>El registro está cerrado.</strong> " + (reg.open ? "" : "Las participaciones ya no se pueden modificar si la lista del sorteo está cerrada.");
-      $("#btnWipe").hidden = !d.wipe_allowed;
       render();
       return keepIdx;
     } catch (e) { toast(e.message); }
@@ -74,19 +73,6 @@
   let qT;
   $("#search").addEventListener("input", (e) => { clearTimeout(qT); qT = setTimeout(() => { state.q = e.target.value.trim(); state.page = 1; load(); }, 300); });
   $("#search").addEventListener("submit", (e) => e.preventDefault());
-
-  // ---------- Borrar datos de prueba ----------
-  $("#btnWipe").addEventListener("click", () => { $("#wipeModal").hidden = false; $("#wipeError").hidden = true; $("#wipeForm").reset(); });
-  $("#wipeForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    try {
-      await api("test.wipe", { method: "POST", body: { confirm: e.target.confirm.value.trim() } });
-      $("#wipeModal").hidden = true;
-      toast("Datos de prueba borrados");
-      state.page = 1;
-      load();
-    } catch (er) { $("#wipeError").textContent = er.message; $("#wipeError").hidden = false; }
-  });
 
   // ---------- Revisión ----------
   const modal = $("#modal");

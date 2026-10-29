@@ -19,9 +19,7 @@ try {
 
     if ($action === 'register' && $method === 'POST') {
         $reg = tg_registro_abierto();
-        // PRUEBA TEMPORAL (quitar después de la prueba): permite registrar antes del inicio con una llave secreta
-        $testOk = tg_wipe_allowed() && hash_equals("0488b28364f989ef3b92c6164ea0001fa84757abd13c1755673565e661aeb2fa", hash("sha256", (string)($_POST["test_key"] ?? "")));
-        if (!$reg['open'] && !$testOk) tg_json(['ok' => false, 'error' => $reg['state'] === 'pronto' ? 'El registro todavía no está habilitado.' : 'El registro ya está cerrado.'], 403);
+        if (!$reg['open']) tg_json(['ok' => false, 'error' => $reg['state'] === 'pronto' ? 'El registro todavía no está habilitado.' : 'El registro ya está cerrado.'], 403);
         // anti-bots: campo trampa + tiempo mínimo para completar el formulario + límite por IP
         if (!empty($_POST['website'])) tg_json(['ok' => false, 'error' => 'No se pudo registrar.'], 400);
         $elapsed = time() - (int)($_POST['t'] ?? 0);
@@ -171,7 +169,7 @@ try {
         $people = (int)$db->query("SELECT COUNT(DISTINCT ci) FROM tg_entries WHERE estado = 'aprobada'")->fetchColumn();
         tg_json(['ok' => true, 'entries' => $rows, 'total' => $total, 'page' => $page, 'per' => $per,
             'counts' => ['pendiente' => (int)($counts['pendiente'] ?? 0), 'aprobada' => (int)($counts['aprobada'] ?? 0), 'rechazada' => (int)($counts['rechazada'] ?? 0), 'personas' => $people],
-            'registro' => tg_registro_abierto(), 'wipe_allowed' => tg_wipe_allowed()]);
+            'registro' => tg_registro_abierto()]);
     }
 
     if ($action === 'photo') {
@@ -342,18 +340,6 @@ try {
             $db->exec('DELETE FROM tg_draw');
             tg_log('draw.reset', 'Sorteo reiniciado');
             tg_json(['ok' => true, 'draw' => tg_draw_state()]);
-        }
-
-        case 'test.wipe': {
-            // Borra TODOS los datos (registros, fotos, sorteo, historial). Solo antes del inicio real de la promoción.
-            if (!tg_wipe_allowed()) throw new InvalidArgumentException('La promoción ya comenzó: los datos no se pueden borrar.');
-            if ((string)(tg_body()['confirm'] ?? '') !== 'BORRAR TODO') throw new InvalidArgumentException('Escribí BORRAR TODO para confirmar.');
-            foreach (['tg_results', 'tg_draw', 'tg_entries', 'tg_attempts', 'tg_log'] as $t) $db->exec("DELETE FROM $t");
-            $db->exec('ALTER TABLE tg_entries AUTO_INCREMENT = 1');
-            if (is_dir(TG_DATA_DIR)) $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(TG_DATA_DIR, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
-            foreach ($it ?? [] as $f) { $f->isDir() ? @rmdir($f->getPathname()) : @unlink($f->getPathname()); }
-            tg_log('test.wipe', 'Datos de prueba borrados');
-            tg_json(['ok' => true]);
         }
 
         case 'password': {
