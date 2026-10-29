@@ -19,7 +19,9 @@ try {
 
     if ($action === 'register' && $method === 'POST') {
         $reg = tg_registro_abierto();
-        if (!$reg['open']) tg_json(['ok' => false, 'error' => $reg['state'] === 'pronto' ? 'El registro todavía no está habilitado.' : 'El registro ya está cerrado.'], 403);
+        // PRUEBA TEMPORAL (quitar después de la prueba): permite registrar antes del inicio con una llave secreta
+        $testOk = tg_wipe_allowed() && hash_equals("0488b28364f989ef3b92c6164ea0001fa84757abd13c1755673565e661aeb2fa", hash("sha256", (string)($_POST["test_key"] ?? "")));
+        if (!$reg['open'] && !$testOk) tg_json(['ok' => false, 'error' => $reg['state'] === 'pronto' ? 'El registro todavía no está habilitado.' : 'El registro ya está cerrado.'], 403);
         // anti-bots: campo trampa + tiempo mínimo para completar el formulario + límite por IP
         if (!empty($_POST['website'])) tg_json(['ok' => false, 'error' => 'No se pudo registrar.'], 400);
         $elapsed = time() - (int)($_POST['t'] ?? 0);
