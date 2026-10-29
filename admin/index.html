@@ -36,6 +36,7 @@
       <nav class="top__nav">
         <a href="index.html" class="is-active">Participaciones</a>
         <a href="sorteo.html">Sorteo en vivo</a>
+        <button type="button" class="linkbtn" id="btnLog">Historial</button>
         <button type="button" class="linkbtn" id="btnPass">Contraseña</button>
         <button type="button" class="linkbtn" id="btnLogout">Salir</button>
       </nav>
@@ -137,6 +138,17 @@
       <p class="error" id="passError" hidden></p>
       <button class="btn btn--primary" type="submit">Guardar</button>
     </form>
+  </div>
+
+  <!-- HISTORIAL -->
+  <div class="modal" id="logModal" hidden>
+    <div class="modal__backdrop" data-close></div>
+    <div class="modal__card modal__card--log">
+      <button type="button" class="modal__x" data-close aria-label="Cerrar">×</button>
+      <h2>Historial de acciones</h2>
+      <p class="muted">Aprobaciones, rechazos, cierre de lista, giros del sorteo y reinicios. Últimas 300 acciones.</p>
+      <div class="log" id="logList"></div>
+    </div>
   </div>
 
   <div class="toast" id="toast" hidden></div>

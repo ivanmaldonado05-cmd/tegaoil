@@ -1,6 +1,6 @@
 # Tega Oil × Vevil — Sorteo
 
-Sitio HTML/CSS/JS vanilla + backend PHP/MySQL (registro, panel y sorteo) para Hostinger.
+Sitio HTML/CSS/JS vanilla + backend PHP/MySQL (registro, panel y sorteo) para Hostinger. **LIVE: https://veviltegaoil.com** (Hostinger, deploy desde GitHub main).
 **Todo el contenido se edita en `assets/js/config.js`.** Los campos opcionales vacíos no se muestran.
 
 ## Cómo pasar al modo "ganadores"
@@ -64,9 +64,9 @@ El cliente confirmó (24/10/2026) que no hay más datos. Campos opcionales en `c
 1. hPanel → Sitios → dominio → **Git**: repo `ivanmaldonado05-cmd/tegaoil`, rama `main`, directorio `public_html` (deploy automático al hacer push). No usar "Deploy as static": necesita PHP.
 2. hPanel → **Bases de datos MySQL**: crear base + usuario.
 3. Administrador de archivos → `public_html/server/`: copiar `config.sample.php` como `config.php` y completar `db`, `install_key` (clave larga) y fechas de registro.
-4. Abrir `https://DOMINIO/server/install.php?key=LA-INSTALL-KEY` → crea tablas, verifica carpeta de fotos y genera el hash de contraseña → pegarlo en `admin_pass_hash`.
+4. Abrir `https://veviltegaoil.com/server/install.php?key=LA-INSTALL-KEY` → crea tablas, verifica carpeta de fotos y genera el hash de contraseña → pegarlo en `admin_pass_hash`.
 5. Dejar `install_key` vacía en `config.php` (deshabilita el instalador).
-6. Verificar: `https://DOMINIO/server/data/facturas/` debe dar **403**; registrar una factura de prueba; revisarla en `/admin/`.
+6. Verificar: `https://veviltegaoil.com/server/data/facturas/` debe dar **403**; registrar una factura de prueba; revisarla en `/admin/`.
 7. Activar SSL (https) en hPanel.
 
 ### Uso

@@ -110,6 +110,7 @@ function drawState() {
   };
 }
 const registro = () => ({ open: !db.draw, desde: "2026-11-10T00:00:00-03:00", hasta: "2027-03-31T23:59:59-03:00", state: db.draw ? "cerrado" : "abierto" });
+const addLog = (user, action, detail) => db.log.unshift({ at: pyNow(), user, action, detail: typeof detail === "string" ? detail : JSON.stringify(detail) });
 const csv = (rows) => "﻿" + rows.map((r) => r.map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`).join(";")).join("\r\n");
 
 /* ---------- API ---------- */
@@ -200,6 +201,8 @@ async function apiHandler(req, res, url) {
     return res.end(csv([["N° participación", "Fecha de carga", "Nombre", "Apellido", "Cédula", "Teléfono", "Email", "Sucursal", "Estado", "Motivo", "N° factura"], ...rows]));
   }
 
+  if (action === "log") return send(res, 200, { ok: true, log: db.log.slice(0, 300) });
+
   if (action === "draw.state") return send(res, 200, { ok: true, draw: drawState() });
 
   if (action === "draw.list") {
@@ -229,6 +232,7 @@ async function apiHandler(req, res, url) {
       if (!e) return fail(422, "No encontrada");
       if (b.estado === "rechazada" && !b.motivo) return fail(422, "Indicá el motivo del rechazo.");
       Object.assign(e, { estado: b.estado, motivo: b.estado === "rechazada" ? b.motivo : "", nro_factura: b.nro_factura || "", reviewed_at: pyNow(), reviewed_by: s.user });
+      addLog(s.user, "review", { id: e.id, estado: b.estado, motivo: e.motivo, nro_factura: e.nro_factura });
       return send(res, 200, { ok: true });
     }
     case "draw.seal": {
@@ -237,6 +241,7 @@ async function apiHandler(req, res, url) {
       if (!snap.length) return fail(422, "No hay participaciones aprobadas.");
       const hash = crypto.createHash("sha256").update(snap.map((r) => r[0] + "|" + r[1]).join("\n")).digest("hex");
       db.draw = { sealed_at: pyNow(), sealed_by: s.user, total: snap.length, hash, snapshot: snap };
+      addLog(s.user, "draw.seal", { total: snap.length, hash });
       return send(res, 200, { ok: true, draw: drawState() });
     }
     case "draw.spin": {
@@ -251,12 +256,14 @@ async function apiHandler(req, res, url) {
       const pick = pool[crypto.randomInt(pool.length)];
       db.results.push({ prize_id: prize.id, rol, entry_id: pick[0], ci: pick[1], pool: pool.length, created_at: pyNow(), created_by: s.user });
       const w = db.entries.find((x) => x.id === pick[0]);
+      addLog(s.user, "draw.spin", { prize: prize.id, rol, entry: pick[0], pool: pool.length });
       const reel = Array.from({ length: Math.min(40, pool.length) }, () => { const id = pool[crypto.randomInt(pool.length)][0]; const e = db.entries.find((x) => x.id === id); return shortName(e.nombre, e.apellido); });
       return send(res, 200, { ok: true, result: { prize, rol, numero: numero(w.id), nombre: `${w.nombre} ${w.apellido}`, short: shortName(w.nombre, w.apellido), ci_mask: maskCi(w.ci), sucursal: w.sucursal, pool: pool.length }, reel, draw: drawState() });
     }
     case "draw.reset":
       if (b.confirm !== "REINICIAR") return fail(422, "Escribí REINICIAR para confirmar.");
       db.results = []; db.draw = null;
+      addLog(s.user, "draw.reset", "Sorteo reiniciado");
       return send(res, 200, { ok: true, draw: drawState() });
     case "password": return fail(422, "En el servidor de prueba la contraseña es fija (admin12345).");
   }

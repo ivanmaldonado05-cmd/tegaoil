@@ -147,3 +147,13 @@ input[type=checkbox] { width: 18px; min-height: 18px; accent-color: var(--green-
   .top__brand span { display: none; }
   .top__nav { gap: 12px; font-size: .9rem; }
 }
+
+/* Historial */
+.modal__card--log { width: min(760px, 100%); padding: 28px; display: grid; gap: 10px; }
+.log { display: grid; gap: 6px; margin-top: 6px; }
+.log__row { display: grid; grid-template-columns: 150px 120px 1fr; gap: 10px; padding: 9px 12px; border-radius: 10px; background: var(--black); font-size: .88rem; }
+.log__row time { color: var(--muted); font-variant-numeric: tabular-nums; }
+.log__a { font-weight: 800; }
+.log__a--aprobada { color: var(--green-2); } .log__a--rechazada { color: #ff8a97; } .log__a--sorteo { color: #d7a6ff; } .log__a--reset { color: var(--amber); }
+.log__d { color: var(--muted); word-break: break-word; }
+@media (max-width: 640px) { .log__row { grid-template-columns: 1fr; gap: 2px; } }

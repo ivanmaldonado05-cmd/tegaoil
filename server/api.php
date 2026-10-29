@@ -24,7 +24,7 @@ try {
         if (!empty($_POST['website'])) tg_json(['ok' => false, 'error' => 'No se pudo registrar.'], 400);
         $elapsed = time() - (int)($_POST['t'] ?? 0);
         if ($elapsed < 4) tg_json(['ok' => false, 'error' => 'Revisá los datos y volvé a intentar.'], 400);
-        if (tg_attempts('reg', 60) >= 20) tg_json(['ok' => false, 'error' => 'Demasiados registros desde esta conexión. Probá más tarde.'], 429);
+        if (tg_attempts('reg', 60) >= 150) tg_json(['ok' => false, 'error' => 'Demasiados registros desde esta conexión. Probá más tarde.'], 429);
 
         $nombre = tg_str($_POST['nombre'] ?? '', 80);
         $apellido = tg_str($_POST['apellido'] ?? '', 80);

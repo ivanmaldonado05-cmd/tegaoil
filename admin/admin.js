@@ -148,3 +148,34 @@
     else if (e.key === "ArrowLeft") open(state.idx - 1);
   });
 })();
+
+/* ---------- Historial de acciones ---------- */
+(function () {
+  const { api, esc, $, toast, fmtDate } = window.TG;
+  const btn = $("#btnLog");
+  if (!btn) return;
+  const ROL = { ganador: "ganador", suplente1: "suplente 1", suplente2: "suplente 2" };
+  function describe(r) {
+    let d = {};
+    try { d = JSON.parse(r.detail); } catch { return { label: r.action, cls: "", text: r.detail }; }
+    const num = (id) => "#" + String(id).padStart(6, "0");
+    switch (r.action) {
+      case "review": return { label: d.estado === "aprobada" ? "Aprobó" : d.estado === "rechazada" ? "Rechazó" : "Volvió a pendiente", cls: d.estado, text: `${num(d.id)}${d.motivo ? " — " + d.motivo : ""}${d.nro_factura ? " · factura " + d.nro_factura : ""}` };
+      case "draw.seal": return { label: "Cerró la lista", cls: "sorteo", text: `${d.total} participaciones · huella ${String(d.hash).slice(0, 16)}…` };
+      case "draw.spin": return { label: "Giro", cls: "sorteo", text: `${d.prize} · ${ROL[d.rol] || d.rol} · ${num(d.entry)} (entre ${d.pool})` };
+      default: return { label: r.action, cls: "", text: typeof d === "object" ? JSON.stringify(d) : String(d) };
+    }
+  }
+  btn.addEventListener("click", async () => {
+    $("#logModal").hidden = false;
+    $("#logList").innerHTML = '<p class="muted">Cargando…</p>';
+    try {
+      const { log } = await api("log");
+      $("#logList").innerHTML = log.length ? log.map((r) => {
+        const x = r.action === "draw.reset" ? { label: "Reinició el sorteo", cls: "reset", text: "Ensayo: resultados borrados" }
+          : r.action === "password" ? { label: "Cambió la contraseña", cls: "", text: "" } : describe(r);
+        return `<div class="log__row"><time>${esc(fmtDate(r.at))}</time><span class="log__a log__a--${x.cls}">${esc(x.label)}</span><span class="log__d">${esc(x.text)} · ${esc(r.user)}</span></div>`;
+      }).join("") : '<p class="muted">Todavía no hay acciones registradas.</p>';
+    } catch (e) { toast(e.message); }
+  });
+})();
